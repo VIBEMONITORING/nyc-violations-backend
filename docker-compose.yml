@@ -1,0 +1,175 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # API Layer - FastAPI Application
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nyc-compliance-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nyc_user:nyc_password@postgres:5432/nyc_compliance
+      - REDIS_URL=redis://redis:6379/0
+      - NYC_OPENDATA_TOKEN=${NYC_OPENDATA_TOKEN}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - LOG_LEVEL=INFO
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./src:/app/src
+      - ./templates:/app/templates
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - nyc-compliance-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # Background Workers - Celery (Optional)
+  # ============================================================================
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: nyc-compliance-worker
+  #   environment:
+  #     - DATABASE_URL=postgresql://nyc_user:nyc_password@postgres:5432/nyc_compliance
+  #     - REDIS_URL=redis://redis:6379/0
+  #     - NYC_OPENDATA_TOKEN=${NYC_OPENDATA_TOKEN}
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   command: celery -A tasks worker --loglevel=info
+  #   networks:
+  #     - nyc-compliance-network
+  #   restart: unless-stopped
+
+  # ============================================================================
+  # Scheduled Tasks - Celery Beat (Optional)
+  # ============================================================================
+  # scheduler:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: nyc-compliance-scheduler
+  #   environment:
+  #     - DATABASE_URL=postgresql://nyc_user:nyc_password@postgres:5432/nyc_compliance
+  #     - REDIS_URL=redis://redis:6379/0
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   command: celery -A tasks beat --loglevel=info
+  #   networks:
+  #     - nyc-compliance-network
+  #   restart: unless-stopped
+
+  # ============================================================================
+  # Database - PostgreSQL
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: nyc-compliance-db
+    environment:
+      - POSTGRES_USER=nyc_user
+      - POSTGRES_PASSWORD=nyc_password
+      - POSTGRES_DB=nyc_compliance
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - nyc-compliance-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nyc_user -d nyc_compliance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Cache Layer - Redis
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: nyc-compliance-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - nyc-compliance-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ============================================================================
+  # Analytics Dashboard - Metabase (Optional)
+  # ============================================================================
+  metabase:
+    image: metabase/metabase:latest
+    container_name: nyc-compliance-analytics
+    ports:
+      - "3001:3000"
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=nyc_compliance
+      - MB_DB_PORT=5432
+      - MB_DB_USER=nyc_user
+      - MB_DB_PASS=nyc_password
+      - MB_DB_HOST=postgres
+    depends_on:
+      - postgres
+    volumes:
+      - metabase_data:/metabase-data
+    networks:
+      - nyc-compliance-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # pgAdmin - Database Management (Optional)
+  # ============================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: nyc-compliance-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - nyc-compliance-network
+    restart: unless-stopped
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  metabase_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  nyc-compliance-network:
+    driver: bridge
