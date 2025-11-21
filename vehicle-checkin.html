@@ -1,464 +1,604 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Vehicle/Rig Check-In - Certerra Format</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Docx generation (pure browser) -->
-  <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      margin: 0; padding: 24px; background: #f5f5f5; color: #1a1a1a;
-    }
-    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    h1 {
-      margin: 0 0 8px; font-size: 28px; color: #0066cc;
-      border-bottom: 3px solid #0066cc; padding-bottom: 12px;
-    }
-    .subtitle { color: #666; font-size: 14px; margin: 0 0 24px; }
-    fieldset {
-      margin: 20px 0; padding: 20px; border: 2px solid #e0e0e0;
-      border-radius: 8px; background: #fafafa;
-    }
-    legend {
-      padding: 0 12px; font-weight: 700; font-size: 16px;
-      color: #0066cc; background: white; border-radius: 4px;
-    }
-    label {
-      display: block; margin: 8px 0 4px; font-size: 14px;
-      font-weight: 600; color: #333;
-    }
-    input[type="text"], input[type="email"], input[type="date"], textarea {
-      width: 100%; padding: 10px 12px; border: 2px solid #ddd;
-      border-radius: 6px; font-family: inherit; font-size: 14px;
-      transition: border-color 0.2s;
-    }
-    input[type="text"]:focus, input[type="email"]:focus,
-    input[type="date"]:focus, textarea:focus {
-      outline: none; border-color: #0066cc;
-    }
-    input[type="file"] {
-      margin: 6px 0 10px; padding: 8px; border: 2px dashed #ddd;
-      border-radius: 6px; width: 100%; background: white;
-    }
-    textarea { resize: vertical; min-height: 80px; }
-    .row { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0; }
-    .col { flex: 1 1 280px; min-width: 260px; }
-    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .btnbar {
-      display: flex; gap: 12px; margin-top: 24px;
-      padding-top: 20px; border-top: 2px solid #e0e0e0; flex-wrap: wrap;
-    }
-    button {
-      border: 0; padding: 12px 24px; border-radius: 8px;
-      cursor: pointer; font-weight: 700; font-size: 15px;
-      transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    button.primary { background: #0066cc; color: white; }
-    button.primary:hover { background: #0052a3; transform: translateY(-1px); }
-    button.secondary { background: #00aa66; color: white; }
-    button.secondary:hover { background: #008855; transform: translateY(-1px); }
-    button.gray { background: #666; color: white; }
-    button.gray:hover { background: #555; }
-    .note {
-      font-size: 12px; color: #666; margin-top: 6px;
-      padding: 6px 10px; background: #fff; border-radius: 4px;
-      border-left: 3px solid #0066cc;
-    }
-    .status {
-      margin-top: 16px; padding: 12px 16px; font-size: 14px;
-      border-radius: 6px; background: #e8f5e9; color: #2e7d32;
-      white-space: pre-wrap; border-left: 4px solid #4caf50;
-    }
-    .status.error { background: #ffebee; color: #c62828; border-left-color: #f44336; }
-    .status.warning { background: #fff3e0; color: #e65100; border-left-color: #ff9800; }
-    .photo-section { margin-top: 12px; }
-    @media (max-width: 768px) {
-      .container { padding: 16px; }
-      h1 { font-size: 22px; }
-      .row { flex-direction: column; }
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Certerra — Vehicle & Drill Rig Inspection</title>
+
+<!-- Word Document Generation Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+
+<style>
+:root{
+  --ct-primary:#004c6d; --ct-primary-2:#00344c; --ct-accent:#00a4b8;
+  --ct-bg:#0b1720; --ct-surface:#111827; --ct-surface-2:#0f172a;
+  --ct-border:#1f2a37; --ct-text:#f9fafb; --ct-muted:#9ca3af;
+  --ct-good:#22c55e; --ct-warn:#f59e0b; --ct-focus:#facc15;
+  --radius:16px; --shadow:0 14px 40px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ct-bg);color:var(--ct-text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1024px;margin:0 auto;padding:12px}
+header{background:linear-gradient(135deg,var(--ct-primary),var(--ct-primary-2));border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin:10px 0 12px}
+header h1{margin:.1rem 0;font-size:1.2rem}
+header p{margin:.2rem 0;font-size:.9rem;opacity:.92}
+.meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;opacity:.9}
+
+.toolbar{display:grid;grid-template-columns:1.4fr 1fr .9fr .9fr 1.1fr 1.1fr;gap:8px;margin:10px 0}
+@media(max-width:960px){.toolbar{grid-template-columns:1.4fr 1fr 1fr}}
+@media(max-width:640px){.toolbar{grid-template-columns:1fr}}
+select,input[type="text"],input[type="date"],input[type="email"]{
+  background:var(--ct-surface-2);color:var(--ct-text);
+  border:1px solid var(--ct-border);border-radius:10px;
+  padding:7px 9px;font-size:.9rem;width:100%;
+}
+.small{font-size:.8rem;color:var(--ct-muted);display:block;margin-bottom:2px}
+.btn{border:1px solid transparent;background:var(--ct-accent);color:#041018;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:.9rem}
+.btn:hover{filter:brightness(.95)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:transparent;border-color:#cbd5e1;color:#e2e8f0}
+.btn.good{background:var(--ct-good);color:#00140a}
+.btn.warn{background:var(--ct-warn);color:#1f1300}
+
+.card{background:var(--ct-surface);border:1px solid var(--ct-border);border-radius:16px;box-shadow:var(--shadow);margin:10px 0}
+.card summary{list-style:none;cursor:pointer;padding:14px;display:flex;align-items:center;gap:10px;font-weight:800}
+.card summary::-webkit-details-marker{display:none}
+.tag{font-size:.72rem;border:1px solid #93c5fd;padding:3px 8px;border-radius:999px;color:#cfe4ff}
+.content{padding:0 14px 14px}
+.note{font-size:.9rem;color:var(--ct-muted);margin:2px 0 10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+.checklist{display:grid;gap:8px}
+.item{display:flex;gap:10px;align-items:flex-start;background:var(--ct-surface-2);padding:9px 10px;border-radius:12px;border:1px solid var(--ct-border)}
+.item input[type="checkbox"]{margin-top:3px;transform:scale(1.15)}
+.item label{line-height:1.35;font-size:.9rem}
+textarea{
+  width:100%;background:var(--ct-surface-2);color:var(--ct-text);
+  border:1px solid var(--ct-border);border-radius:10px;
+  padding:7px 9px;font-size:.9rem
+}
+.photos{border:1px dashed #375a7f;background:#0b1220;padding:8px;border-radius:12px}
+.photos input[type="file"]{width:100%;font-size:.85rem}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.thumb{position:relative}
+.thumb img{width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--ct-border)}
+.thumb span{position:absolute;top:2px;right:4px;background:rgba(0,0,0,.55);font-size:.7rem;padding:1px 4px;border-radius:4px}
+.table{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:900px){.table{grid-template-columns:repeat(5,1fr)}}
+footer{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 24px}
+.hint{font-size:.8rem;color:var(--ct-muted)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--ct-focus);outline-offset:2px}
+
+/* Signature */
+.sig-box{border:1px solid var(--ct-border);border-radius:12px;background:var(--ct-surface-2);padding:8px}
+#sigCanvas{width:100%;height:160px;border-radius:8px;background:#020617;border:1px solid #1e293b;touch-action:none}
+
+/* Status messages */
+.status-msg{padding:10px;border-radius:8px;margin:8px 0;font-size:.85rem}
+.status-msg.success{background:#065f4620;border:1px solid #10b981;color:#6ee7b7}
+.status-msg.error{background:#7f1d1d20;border:1px solid #ef4444;color:#fca5a5}
+.status-msg.info{background:#1e40af20;border:1px solid #3b82f6;color:#93c5fd}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🚛 Vehicle / Drill Rig Check-In</h1>
-    <p class="subtitle">Certerra Inspection & Compliance Report Generator</p>
+<div class="wrap" role="application" aria-label="Certerra Vehicle & Rig Inspection">
 
-    <!-- CONTACT / META -->
-    <fieldset>
-      <legend>📧 Recipients & Metadata</legend>
-      <div class="row">
-        <div class="col">
-          <label for="to">Email To (required)</label>
-          <input id="to" type="text" placeholder="recipient@example.com; other@example.com" required />
-        </div>
-        <div class="col">
-          <label for="cc">CC (optional)</label>
-          <input id="cc" type="text" placeholder="cc@example.com" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="date">Inspection Date</label>
-          <input id="date" type="date" required />
-        </div>
-        <div class="col">
-          <label for="inspector">Technician / Inspector</label>
-          <input id="inspector" type="text" placeholder="Full Name" required />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="vehicle">Vehicle / Rig ID</label>
-          <input id="vehicle" type="text" placeholder="Truck #12 / Rig #3" required />
-        </div>
-        <div class="col">
-          <label for="subject">Email Subject (optional)</label>
-          <input id="subject" type="text" placeholder="Auto-generated if blank" />
-        </div>
-      </div>
-    </fieldset>
+<header>
+  <h1>Vehicle & Drill Rig Inspection — Certerra</h1>
+  <p>Mobile-ready checklist with auto-filled vehicle data, photos, technician signature, and enhanced email/Word export with embedded images.</p>
+  <div class="meta"><span>Version 2.0 Enhanced</span><span>Effective: 2025-11-20</span><span>Use: Daily / Pre-Trip / PM</span></div>
+</header>
 
-    <!-- CHECKLIST NOTES -->
-    <fieldset>
-      <legend>📋 Inspection Checklist Notes</legend>
-      <div class="grid2">
-        <div>
-          <label for="notes-fluids">1. Fluids & Levels</label>
-          <textarea id="notes-fluids" rows="3" placeholder="Oil, coolant, brake fluid, hydraulic fluid levels..."></textarea>
-        </div>
-        <div>
-          <label for="notes-exterior">2. Exterior / Tires</label>
-          <textarea id="notes-exterior" rows="3" placeholder="Body damage, tire condition, lights, mirrors..."></textarea>
-        </div>
-        <div>
-          <label for="notes-interior">3. Interior / Safety</label>
-          <textarea id="notes-interior" rows="3" placeholder="Seat belts, fire extinguisher, first aid kit, gauges..."></textarea>
-        </div>
-        <div>
-          <label for="notes-rig">4. Rig / Hydraulics & Deck</label>
-          <textarea id="notes-rig" rows="3" placeholder="Hydraulic systems, drill deck, outriggers, hoses..."></textarea>
-        </div>
-      </div>
-    </fieldset>
-
-    <!-- IMAGES BY SECTION (INLINE IN EMAIL BODY) -->
-    <fieldset>
-      <legend>📷 Inspection Photos (by section)</legend>
-      <p class="note">Images will be embedded inline in the email body and Word document. Supported: JPG, PNG, GIF, WebP</p>
-      <div class="row">
-        <div class="col photo-section">
-          <label for="photos-fluids">Fluids Photos</label>
-          <input id="photos-fluids" type="file" accept="image/*" multiple />
-          <div class="note">Photos prefixed with <b>fluids_</b></div>
-        </div>
-        <div class="col photo-section">
-          <label for="photos-exterior">Exterior Photos</label>
-          <input id="photos-exterior" type="file" accept="image/*" multiple />
-          <div class="note">Photos prefixed with <b>exterior_</b></div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col photo-section">
-          <label for="photos-interior">Interior Photos</label>
-          <input id="photos-interior" type="file" accept="image/*" multiple />
-          <div class="note">Photos prefixed with <b>interior_</b></div>
-        </div>
-        <div class="col photo-section">
-          <label for="photos-rig">Rig Photos</label>
-          <input id="photos-rig" type="file" accept="image/*" multiple />
-          <div class="note">Photos prefixed with <b>rig_</b></div>
-        </div>
-      </div>
-    </fieldset>
-
-    <!-- OTHER ATTACHMENTS -->
-    <fieldset>
-      <legend>📎 Additional Attachments</legend>
-      <label for="attachments">Attach supplementary files (PDF, Excel, etc.)</label>
-      <input id="attachments" type="file" multiple />
-      <div class="note">These will be included as separate attachments in the email</div>
-    </fieldset>
-
-    <!-- ACTIONS -->
-    <div class="btnbar">
-      <button id="btn-submit" class="primary">📧 Generate Email Draft (.eml)</button>
-      <button id="btn-docx" class="secondary">📄 Export Word Report (.docx)</button>
-      <button id="btn-clear" class="gray">🔄 Clear Form</button>
-    </div>
-
-    <div id="status" class="status" style="display:none"></div>
+<!-- VEHICLE + HEADER FIELDS -->
+<div class="toolbar" role="group" aria-label="Header">
+  <div>
+    <label for="vehicleSelect" class="small">Vehicle</label>
+    <select id="vehicleSelect" aria-label="Select vehicle"></select>
   </div>
+  <div>
+    <label for="date" class="small">Date</label>
+    <input id="date" type="date"/>
+  </div>
+  <div>
+    <label for="inspector" class="small">Technician</label>
+    <input id="inspector" type="text" placeholder="Technician name"/>
+  </div>
+  <div>
+    <label for="odometer" class="small">Odometer / Hours</label>
+    <input id="odometer" type="text" placeholder="e.g., 128,450 mi / 6,412 hrs"/>
+  </div>
+  <div>
+    <label for="emailTo" class="small">Email To</label>
+    <input id="emailTo" type="email" placeholder="pm@certerra.com"/>
+  </div>
+  <div>
+    <label for="emailCc" class="small">Email CC (optional)</label>
+    <input id="emailCc" type="email" placeholder="supervisor@certerra.com"/>
+  </div>
+</div>
+
+<!-- AUTO-POPULATED VEHICLE RECORD -->
+<details class="card" open>
+  <summary>📄 Vehicle Record <span class="tag">Auto-populated</span></summary>
+  <div class="content">
+    <div class="table">
+      <div><label class="small">Vehicle Year</label><input id="f_year" type="text"></div>
+      <div><label class="small">Vehicle Model</label><input id="f_model" type="text"></div>
+      <div><label class="small">Vehicle Type</label><input id="f_type" type="text"></div>
+      <div><label class="small">Plate #</label><input id="f_plate" type="text"></div>
+      <div><label class="small">VIN #</label><input id="f_vin" type="text"></div>
+      <div><label class="small">Driver</label><input id="f_driver" type="text"></div>
+      <div><label class="small">Notes</label><input id="f_notes" type="text"></div>
+      <div><label class="small">Cab Type</label><input id="f_cab" type="text"></div>
+      <div><label class="small">Door Configuration</label><input id="f_door" type="text"></div>
+    </div>
+  </div>
+</details>
+
+<!-- FLUIDS -->
+<details class="card" open>
+  <summary>🧪 Fluids & Levels</summary>
+  <div class="content">
+    <div class="checklist">
+      <div class="item"><input type="checkbox" id="fl1"><label for="fl1">Engine oil level OK / no leaks</label></div>
+      <div class="item"><input type="checkbox" id="fl2"><label for="fl2">Coolant level OK / hoses sound</label></div>
+      <div class="item"><input type="checkbox" id="fl3"><label for="fl3">Brake fluid OK</label></div>
+      <div class="item"><input type="checkbox" id="fl4"><label for="fl4">Power steering OK</label></div>
+      <div class="item"><input type="checkbox" id="fl5"><label for="fl5">Transmission fluid OK</label></div>
+      <div class="item"><input type="checkbox" id="fl6"><label for="fl6">DEF / Fuel levels OK</label></div>
+    </div>
+    <div class="grid-2" style="margin-top:10px">
+      <div>
+        <label for="fluids-notes" class="small"><strong>Notes</strong></label>
+        <textarea id="fluids-notes" rows="4" placeholder="Leaks, top-offs, observations..."></textarea>
+      </div>
+      <div class="photos" aria-label="Fluids photos">
+        <label class="small"><strong>Photos</strong></label>
+        <input id="fluids-photos" type="file" accept="image/*" multiple/>
+        <div id="fluids-thumbs" class="thumbs" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EXTERIOR -->
+<details class="card">
+  <summary>🚚 Exterior / Tires</summary>
+  <div class="content">
+    <div class="checklist">
+      <div class="item"><input type="checkbox" id="ex1"><label for="ex1">Body / bumpers / mirrors OK</label></div>
+      <div class="item"><input type="checkbox" id="ex2"><label for="ex2">Lights / signals / reflectors OK</label></div>
+      <div class="item"><input type="checkbox" id="ex3"><label for="ex3">Tires: tread / PSI OK</label></div>
+      <div class="item"><input type="checkbox" id="ex4"><label for="ex4">Wheels / lug nuts tight</label></div>
+      <div class="item"><input type="checkbox" id="ex5"><label for="ex5">No leaks underneath</label></div>
+    </div>
+    <div class="grid-2" style="margin-top:10px">
+      <div>
+        <label for="ex-notes" class="small"><strong>Notes</strong></label>
+        <textarea id="ex-notes" rows="4" placeholder="Damage, tire wear, leaks..."></textarea>
+      </div>
+      <div class="photos" aria-label="Exterior photos">
+        <label class="small"><strong>Photos</strong></label>
+        <input id="ex-photos" type="file" accept="image/*" multiple/>
+        <div id="ex-thumbs" class="thumbs" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- INTERIOR -->
+<details class="card">
+  <summary>🧰 Interior / Safety</summary>
+  <div class="content">
+    <div class="checklist">
+      <div class="item"><input type="checkbox" id="in1"><label for="in1">Seat belts / seats OK</label></div>
+      <div class="item"><input type="checkbox" id="in2"><label for="in2">Gauges / indicators / horn OK</label></div>
+      <div class="item"><input type="checkbox" id="in3"><label for="in3">HVAC / defrost OK</label></div>
+      <div class="item"><input type="checkbox" id="in4"><label for="in4">Fire extinguisher / triangles / first aid</label></div>
+      <div class="item"><input type="checkbox" id="in5"><label for="in5">Cab clean / organized</label></div>
+    </div>
+    <div class="grid-2" style="margin-top:10px">
+      <div>
+        <label for="in-notes" class="small"><strong>Notes</strong></label>
+        <textarea id="in-notes" rows="4" placeholder="Issues, safety equipment status..."></textarea>
+      </div>
+      <div class="photos" aria-label="Interior photos">
+        <label class="small"><strong>Photos</strong></label>
+        <input id="in-photos" type="file" accept="image/*" multiple/>
+        <div id="in-thumbs" class="thumbs" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- DRILL RIG -->
+<details class="card" id="rigCard" style="display:none">
+  <summary>⚙️ Drill Rig — Hydraulics & Deck</summary>
+  <div class="content">
+    <p class="note">Visible only when a drill rig / mobile B-57 / B-61 vehicle is selected.</p>
+    <div class="checklist">
+      <div class="item"><input type="checkbox" id="rg1"><label for="rg1">Hydraulic oil level OK</label></div>
+      <div class="item"><input type="checkbox" id="rg2"><label for="rg2">Hoses / fittings OK, no leaks</label></div>
+      <div class="item"><input type="checkbox" id="rg3"><label for="rg3">Hydraulic cylinders / rods OK</label></div>
+      <div class="item"><input type="checkbox" id="rg4"><label for="rg4">Pumps / motors OK</label></div>
+      <div class="item"><input type="checkbox" id="rg5"><label for="rg5">Valves / e-stop functional</label></div>
+      <div class="item"><input type="checkbox" id="rg6"><label for="rg6">Winch / cable / feed mechanism OK</label></div>
+      <div class="item"><input type="checkbox" id="rg7"><label for="rg7">Outriggers / mast / pins secure</label></div>
+      <div class="item"><input type="checkbox" id="rg8"><label for="rg8">Deck clean / grease fittings OK</label></div>
+    </div>
+    <div class="grid-2" style="margin-top:10px">
+      <div>
+        <label for="rig-notes" class="small"><strong>Notes</strong></label>
+        <textarea id="rig-notes" rows="4" placeholder="Hydraulic system observations, rig-specific issues..."></textarea>
+      </div>
+      <div class="photos" aria-label="Rig photos">
+        <label class="small"><strong>Photos</strong></label>
+        <input id="rig-photos" type="file" accept="image/*" multiple/>
+        <div id="rig-thumbs" class="thumbs" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- SIGN-OFF -->
+<details class="card" open>
+  <summary>✅ Sign-Off & Condition</summary>
+  <div class="content">
+    <div class="grid-2">
+      <div>
+        <label class="small">Vehicle Condition</label>
+        <select id="condition">
+          <option value="">— Select —</option>
+          <option value="OK">OK — Safe to operate</option>
+          <option value="Minor">Minor issues — safe with monitoring</option>
+          <option value="Repair">Needs repair — do not operate</option>
+          <option value="Critical">Critical — tag out / LOTO</option>
+        </select>
+      </div>
+      <div>
+        <label class="small">Ticket / Work Order</label>
+        <input id="ticket" type="text" placeholder="e.g., WO-12345"/>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <label class="small">Additional Remarks</label>
+      <textarea id="remarks" rows="3" placeholder="Follow-up actions, PM notes..."></textarea>
+    </div>
+    <div style="margin-top:12px" class="sig-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <label class="small"><strong>Technician Signature</strong></label>
+        <button type="button" class="btn secondary" style="padding:4px 10px;font-size:.8rem" onclick="clearSig()">Clear</button>
+      </div>
+      <canvas id="sigCanvas"></canvas>
+      <p class="hint" style="margin-top:4px">Draw your signature above</p>
+    </div>
+  </div>
+</details>
+
+<!-- EXPORT & EMAIL ACTIONS -->
+<footer role="group" aria-label="Actions">
+  <button id="btnTxt" class="btn secondary">💾 Download TXT</button>
+  <button id="btnDoc" class="btn secondary">📄 Download DOC (HTML)</button>
+  <button id="btnWordDocx" class="btn good">📝 Export Word (.docx)</button>
+  <button id="btnEmailHTML" class="btn">📧 Download Email HTML</button>
+  <button id="btnEmail" class="btn">✉️ Send Email (Simple)</button>
+  <button id="btnClear" class="btn warn">🗑 Clear All</button>
+</footer>
+
+<div id="statusMsg"></div>
+
+<div class="hint" style="margin-top:10px">
+  <strong>Email Notes:</strong><br/>
+  • <strong>Download Email HTML</strong> creates a professional HTML email with all images embedded inline (using base64) that you can open in Outlook and send.<br/>
+  • <strong>Send Email (Simple)</strong> opens your email client with plain text (due to browser limitations).<br/>
+  • <strong>Export Word (.docx)</strong> generates a true Word document with properly embedded images and signature.
+</div>
+
+<div role="region" aria-live="polite" aria-atomic="true" class="sr-only" id="announcements"></div>
+
+</div>
 
 <script>
-/* ===========================================================
-   CONFIGURATION & UTILITIES
-=========================================================== */
-const CONFIG = {
-  MAX_IMAGE_WIDTH: 800,  // Max width for email images (px)
-  MAX_IMAGE_HEIGHT: 600, // Max height for email images (px)
-  DOCX_IMAGE_WIDTH: 600, // Width for Word doc images (px)
-  EMAIL_IMG_WIDTH: 480,  // Display width in email (px)
-  EMAIL_IMG_HEIGHT: 360, // Display height in email (px)
-  JPEG_QUALITY: 0.85,    // JPEG compression quality
-};
-
-const byId = id => document.getElementById(id);
-const statusEl = byId('status');
-
-function setStatus(msg, type='success') {
-  statusEl.textContent = msg;
-  statusEl.className = 'status' + (type !== 'success' ? ' ' + type : '');
-  statusEl.style.display = 'block';
-  console.log(`[${type.toUpperCase()}] ${msg}`);
+/* ===== Utilities ===== */
+const q = id => document.getElementById(id);
+function announce(msg){ q('announcements').textContent = msg; }
+function showStatus(msg, type='info'){
+  const el = q('statusMsg');
+  el.className = `status-msg ${type}`;
+  el.textContent = msg;
+  setTimeout(() => el.textContent = '', 5000);
 }
 
-const pad2 = n => String(n).padStart(2,'0');
+/* ===== Vehicle data ===== */
+const vehicles = [
+  {id:1,name:"F-350 (XYZ123)",year:2019,model:"F-350 Super Duty",type:"Pickup Truck",plate:"XYZ123",vin:"1FT8W3BT9KEA12345",driver:"John Doe",notes:"Daily driver",cab:"Crew",door:"4-door"},
+  {id:2,name:"Sprinter Van (ABC789)",year:2021,model:"Sprinter 2500",type:"Cargo Van",plate:"ABC789",vin:"WD3PE8CC5M5123456",driver:"Jane Smith",notes:"Tools & supplies",cab:"Standard",door:"Sliding + Rear"},
+  {id:3,name:"Mobile B-57 (DEF456)",year:2018,model:"International 4300",type:"Drill Rig",plate:"DEF456",vin:"1HTMMAAM7JH123789",driver:"Mike Johnson",notes:"CME-55 mounted",cab:"Extended",door:"2-door",isDrillRig:true},
+  {id:4,name:"Mobile B-61 (GHI999)",year:2020,model:"Freightliner M2 106",type:"Drill Rig",plate:"GHI999",vin:"1FVACXCS3LHBK1234",driver:"Sarah Lee",notes:"Geoprobe 7822DT",cab:"Day",door:"2-door",isDrillRig:true}
+];
 
-function nowStamp() {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}`;
+function renderVehicleOptions(){
+  const sel = q('vehicleSelect');
+  sel.innerHTML = vehicles.map((v,i)=>`<option value="${i}">${v.name}</option>`).join('');
 }
 
-function safeName(s) {
-  return (s || 'report').replace(/[^\w.-]+/g,'_').substring(0, 50);
-}
-
-function extFromMime(mime, fallback='bin') {
-  if (!mime) return fallback;
-  const map = {
-    'image/jpeg':'jpg', 'image/png':'png', 'image/gif':'gif', 'image/webp':'webp',
-    'application/pdf':'pdf',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':'xlsx',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':'docx',
-  };
-  return map[mime] || fallback;
-}
-
-// Read File to DataURL (base64)
-function fileToDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader();
-    fr.onload = () => resolve(String(fr.result));
-    fr.onerror = () => reject(new Error('Failed to read file: ' + file.name));
-    fr.readAsDataURL(file);
+function loadVehicle(idx){
+  const v = vehicles[idx];
+  if(!v) return;
+  ['year','model','type','plate','vin','driver','notes','cab','door'].forEach(k=>{
+    const el = q('f_'+k); if(el) el.value = v[k]||'';
   });
+  q('rigCard').style.display = v.isDrillRig ? '' : 'none';
 }
 
-// Convert DataURL to { mime, base64 }
-function dataURLParts(dataURL) {
-  const m = String(dataURL).match(/^data:(.+?);base64,(.+)$/);
-  if (!m) return null;
-  return { mime: m[1], base64: m[2] };
-}
+/* ===== Photo buckets ===== */
+const buckets = {fl:[], ex:[], in:[], rig:[]};
 
-// Wrap base64 at 76 chars (MIME standard)
-function wrap76(b64) {
-  return b64.replace(/.{1,76}/g, '$&\r\n');
-}
-
-// Convert blob to base64
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      const dataURL = String(fr.result);
-      const p = dataURLParts(dataURL);
-      resolve(p ? p.base64 : '');
-    };
-    fr.onerror = () => reject(new Error('Failed to convert blob to base64'));
-    fr.readAsDataURL(blob);
-  });
-}
-
-// Download blob as file
-function downloadBlob(blob, filename) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    URL.revokeObjectURL(a.href);
-    a.remove();
-  }, 1500);
-}
-
-/* ===========================================================
-   IMAGE PROCESSING (Resize & Optimize for Outlook/Word)
-=========================================================== */
-async function processImageForEmail(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      img.onload = () => {
-        try {
-          // Calculate dimensions maintaining aspect ratio
-          let width = img.width;
-          let height = img.height;
-
-          if (width > CONFIG.MAX_IMAGE_WIDTH || height > CONFIG.MAX_IMAGE_HEIGHT) {
-            const ratio = Math.min(
-              CONFIG.MAX_IMAGE_WIDTH / width,
-              CONFIG.MAX_IMAGE_HEIGHT / height
-            );
-            width = Math.round(width * ratio);
-            height = Math.round(height * ratio);
-          }
-
-          // Create canvas and resize
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to JPEG for better Outlook compatibility
-          canvas.toBlob((blob) => {
-            if (!blob) {
-              reject(new Error('Failed to process image'));
-              return;
-            }
-            resolve({
-              blob,
-              width,
-              height,
-              originalName: file.name,
-              mime: 'image/jpeg'
-            });
-          }, 'image/jpeg', CONFIG.JPEG_QUALITY);
-
-        } catch (err) {
-          reject(err);
-        }
-      };
-      img.onerror = () => reject(new Error('Failed to load image: ' + file.name));
-      img.src = e.target.result;
-    };
-
-    reader.onerror = () => reject(new Error('Failed to read file: ' + file.name));
-    reader.readAsDataURL(file);
-  });
-}
-
-/* ===========================================================
-   INPUT COLLECTION
-=========================================================== */
-function collectRecipients() {
-  const to = byId('to').value.trim();
-  const cc = byId('cc').value.trim();
-  return { to, cc };
-}
-
-function collectMeta() {
-  return {
-    date: byId('date').value,
-    inspector: byId('inspector').value.trim(),
-    vehicle: byId('vehicle').value.trim(),
-    subject: byId('subject').value.trim()
-  };
-}
-
-function collectNotes() {
-  return {
-    fluids: byId('notes-fluids').value.trim(),
-    exterior: byId('notes-exterior').value.trim(),
-    interior: byId('notes-interior').value.trim(),
-    rig: byId('notes-rig').value.trim(),
-  };
-}
-
-function collectPhotoFiles() {
-  const sec = (id, prefix) => Array.from(byId(id).files || []).map((f, i) => {
-    const ext = extFromMime(f.type, 'jpg');
-    const name = f.name || `${prefix}_${i+1}.${ext}`;
-    return { file: f, prefix, originalName: name };
-  });
-
-  return {
-    fluids: sec('photos-fluids', 'fluids'),
-    exterior: sec('photos-exterior', 'exterior'),
-    interior: sec('photos-interior', 'interior'),
-    rig: sec('photos-rig', 'rig')
-  };
-}
-
-function collectExtraAttachments() {
-  return Array.from(byId('attachments').files || []).map(f => ({
-    file: f,
-    name: f.name
-  }));
-}
-
-function validateInputs() {
-  const { to } = collectRecipients();
-  const { date, inspector, vehicle } = collectMeta();
-
-  if (!to) {
-    setStatus('Please enter at least one recipient email address.', 'error');
-    return false;
-  }
-  if (!date) {
-    setStatus('Please select an inspection date.', 'error');
-    return false;
-  }
-  if (!inspector) {
-    setStatus('Please enter the inspector/technician name.', 'error');
-    return false;
-  }
-  if (!vehicle) {
-    setStatus('Please enter the vehicle/rig ID.', 'error');
-    return false;
-  }
-  return true;
-}
-
-/* ===========================================================
-   HTML EMAIL BODY BUILDER (Outlook-Compatible)
-=========================================================== */
-function buildEmailHtml(meta, notes, processedImages) {
-  // processedImages = [{ cid, section, filename, width, height }]
-
-  const sectionHtml = (sectionTitle, sectionKey, sectionNum) => {
-    const note = notes[sectionKey] || '(No notes provided)';
-    const items = processedImages.filter(x => x.section === sectionKey);
-
-    let photosHtml = '';
-    if (items.length > 0) {
-      const imgTags = items.map(img => `
-        <!--[if mso]>
-        <v:image xmlns:v="urn:schemas-microsoft-com:vml"
-                 src="cid:${img.cid}"
-                 style="width:${CONFIG.EMAIL_IMG_WIDTH}px;height:${CONFIG.EMAIL_IMG_HEIGHT}px;"/>
-        <![endif]-->
-        <!--[if !mso]><!-->
-        <img src="cid:${img.cid}"
-             alt="${img.filename}"
-             width="${CONFIG.EMAIL_IMG_WIDTH}"
-             height="${CONFIG.EMAIL_IMG_HEIGHT}"
-             style="width:${CONFIG.EMAIL_IMG_WIDTH}px !important;height:${CONFIG.EMAIL_IMG_HEIGHT}px !important;max-width:${CONFIG.EMAIL_IMG_WIDTH}px;display:block;border:2px solid #ddd;border-radius:4px;margin:8px 0;object-fit:cover;" />
-        <p style="margin:0 0 12px;font-size:11px;color:#666;font-style:italic;">${img.filename}</p>
-        <!--<![endif]-->`).join('\n');
-
-      photosHtml = `
-        <div style="margin:16px 0;">
-          <p style="margin:0 0 8px;font-weight:600;color:#0066cc;">📷 Photos:</p>
-          ${imgTags}
-        </div>`;
+function setupPhotos(inputId, thumbsId, bucket){
+  q(inputId).addEventListener('change', async e => {
+    const files = Array.from(e.target.files||[]);
+    for(const f of files){
+      const dataUrl = await fileToDataURL(f);
+      buckets[bucket].push({name:f.name, dataUrl});
     }
+    renderThumbs(thumbsId, buckets[bucket]);
+  });
+}
 
-    return `
-      <div style="margin:24px 0;padding:16px;background:#fafafa;border-left:4px solid #0066cc;border-radius:4px;">
-        <h3 style="margin:0 0 8px;color:#0066cc;font-size:16px;">${sectionNum}. ${sectionTitle}</h3>
-        <p style="margin:0 0 8px;"><strong style="color:#333;">Notes:</strong> ${note}</p>
-        ${photosHtml}
-      </div>`;
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function renderThumbs(thumbsId, arr){
+  const el = q(thumbsId);
+  el.innerHTML = arr.map((im,i)=>`
+    <div class="thumb">
+      <img src="${im.dataUrl}" alt="${im.name||'photo'}"/>
+      <span>${i+1}</span>
+    </div>
+  `).join('');
+}
+
+setupPhotos('fluids-photos','fluids-thumbs','fl');
+setupPhotos('ex-photos','ex-thumbs','ex');
+setupPhotos('in-photos','in-thumbs','in');
+setupPhotos('rig-photos','rig-thumbs','rig');
+
+/* ===== Signature canvas ===== */
+const sigCanvas = q('sigCanvas');
+const sigCtx = sigCanvas.getContext('2d');
+let sigDirty = false;
+let drawing = false;
+
+function resizeCanvas(){
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width;
+  sigCanvas.height = rect.height;
+  sigCtx.strokeStyle = '#f9fafb';
+  sigCtx.lineWidth = 2;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function getPos(e){
+  const rect = sigCanvas.getBoundingClientRect();
+  const touch = e.touches?.[0] || e;
+  return {x: touch.clientX - rect.left, y: touch.clientY - rect.top};
+}
+
+sigCanvas.addEventListener('pointerdown', e=>{
+  e.preventDefault();
+  drawing = true;
+  const p = getPos(e);
+  sigCtx.beginPath();
+  sigCtx.moveTo(p.x, p.y);
+  sigDirty = true;
+});
+sigCanvas.addEventListener('pointermove', e=>{
+  if(!drawing) return;
+  e.preventDefault();
+  const p = getPos(e);
+  sigCtx.lineTo(p.x, p.y);
+  sigCtx.stroke();
+});
+sigCanvas.addEventListener('pointerup', ()=> drawing = false);
+sigCanvas.addEventListener('pointercancel', ()=> drawing = false);
+
+function clearSig(){
+  sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigDirty = false;
+  announce("Signature cleared");
+}
+
+/* ===== Data collection ===== */
+function bool(id){ return q(id)?.checked ? '✓' : '✗'; }
+function collect(){
+  const vIdx = q('vehicleSelect').value|0;
+  const v = vehicles[vIdx];
+  const header = {
+    date: q('date').value,
+    inspector: q('inspector').value,
+    odo: q('odometer').value,
+    emailTo: q('emailTo').value,
+    emailCc: q('emailCc').value,
+    vehicleName: v.name,
+    year: q('f_year').value,
+    model: q('f_model').value,
+    type: q('f_type').value,
+    plate: q('f_plate').value,
+    vin: q('f_vin').value,
+    driver: q('f_driver').value,
+    notes: q('f_notes').value,
+    cab: q('f_cab').value,
+    door: q('f_door').value
   };
+  const fluids = {
+    checks:[
+      `[${bool('fl1')}] Engine oil OK`,
+      `[${bool('fl2')}] Coolant OK`,
+      `[${bool('fl3')}] Brake fluid OK`,
+      `[${bool('fl4')}] Power steering OK`,
+      `[${bool('fl5')}] Transmission OK`,
+      `[${bool('fl6')}] DEF/Fuel OK`
+    ],
+    notes:q('fluids-notes').value, photos:buckets.fl
+  };
+  const exterior = {
+    checks:[
+      `[${bool('ex1')}] Body/bumpers/mirrors`,
+      `[${bool('ex2')}] Lights/signals`,
+      `[${bool('ex3')}] Tires/tread/PSI`,
+      `[${bool('ex4')}] Wheels/lugs`,
+      `[${bool('ex5')}] No leaks`
+    ],
+    notes:q('ex-notes').value, photos:buckets.ex
+  };
+  const interior = {
+    checks:[
+      `[${bool('in1')}] Seat belts/seats`,
+      `[${bool('in2')}] Gauges/indicators/horn`,
+      `[${bool('in3')}] HVAC/defrost`,
+      `[${bool('in4')}] Extinguisher/triangles/first aid`,
+      `[${bool('in5')}] Clean cab`
+    ],
+    notes:q('in-notes').value, photos:buckets.in
+  };
+  const rigVisible = q('rigCard').style.display === "";
+  const rig = rigVisible ? {
+    checks:[
+      `[${bool('rg1')}] Hyd. oil`,
+      `[${bool('rg2')}] Hoses/fittings`,
+      `[${bool('rg3')}] Cylinders/rods`,
+      `[${bool('rg4')}] Pumps/motors`,
+      `[${bool('rg5')}] Valves/E-stop`,
+      `[${bool('rg6')}] Winch/cable/feed`,
+      `[${bool('rg7')}] Outriggers/mast/pins`,
+      `[${bool('rg8')}] Deck/grease`
+    ],
+    notes:q('rig-notes').value, photos:buckets.rig
+  } : null;
+  const signoff = {
+    condition:q('condition').value,
+    ticket:q('ticket').value,
+    remarks:q('remarks').value
+  };
+  const signatureData = sigDirty ? sigCanvas.toDataURL('image/png') : null;
+  return {header, fluids, exterior, interior, rig, signoff, signatureData};
+}
+
+/* ===== TXT render ===== */
+function renderTXT(d){
+  const imgs = arr => (arr && arr.length) ? arr.map((im,i)=>`  - ${im.name||('image_'+(i+1))}`).join('\n') : '  - (none)';
+  return [
+`CERTERRA — VEHICLE / DRILL RIG INSPECTION`,
+`Generated: ${new Date().toLocaleString()}`,
+`Date: ${d.header.date}    Technician: ${d.header.inspector}`,
+`Vehicle: ${d.header.vehicleName}`,
+`Year: ${d.header.year}   Model: ${d.header.model}   Type: ${d.header.type}`,
+`Plate: ${d.header.plate}   VIN: ${d.header.vin}`,
+`Driver: ${d.header.driver}`,
+`Cab: ${d.header.cab}   Door: ${d.header.door}`,
+`Odometer / Hours: ${d.header.odo}`,
+`Notes: ${d.header.notes || '-'}`,
+``,
+`== FLUIDS & LEVELS ==`,
+d.fluids.checks.join('\n'),
+`Notes: ${d.fluids.notes||'-'}`,
+`Photos:\n${imgs(d.fluids.photos)}`,
+``,
+`== EXTERIOR / TIRES ==`,
+d.exterior.checks.join('\n'),
+`Notes: ${d.exterior.notes||'-'}`,
+`Photos:\n${imgs(d.exterior.photos)}`,
+``,
+`== INTERIOR / SAFETY ==`,
+d.interior.checks.join('\n'),
+`Notes: ${d.interior.notes||'-'}`,
+`Photos:\n${imgs(d.interior.photos)}`,
+d.rig?`\n== DRILL RIG — HYDRAULICS & DECK ==\n${d.rig.checks.join('\n')}\nNotes: ${d.rig.notes||'-'}\nPhotos:\n${imgs(d.rig.photos)}`:'',
+``,
+`== SIGN-OFF ==`,
+`Condition: ${d.signoff.condition||'-'}   Ticket: ${d.signoff.ticket||'-'}`,
+`Remarks: ${d.signoff.remarks||'-'}`,
+`Technician Signature: ${d.signatureData?'(captured)':'(not captured)'}`,
+``].join('\n');
+}
+
+/* ===== DOC (HTML) render ===== */
+function renderDOC(d){
+  const esc = s=>String(s||'').replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+  const imgs = arr => (arr && arr.length) ? arr.map(im=>
+    `<figure style="display:inline-block;margin:4px"><img src="${im.dataUrl}" alt="${esc(im.name||'photo')}" style="width:240px;height:auto;border:1px solid #ccc;border-radius:6px"/><figcaption style="font-size:12px;color:#555">${esc(im.name||'photo')}</figcaption></figure>`
+  ).join('') : '<em>(none)</em>';
+  const ul = arr => `<ul>${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Vehicle Inspection</title></head>
+  <body style="font-family:Segoe UI,Arial,sans-serif">
+    <h2 style="color:#004c6d">Certerra — Vehicle / Drill Rig Inspection</h2>
+    <p><strong>Date:</strong> ${esc(d.header.date)} &nbsp; <strong>Technician:</strong> ${esc(d.header.inspector)}</p>
+    <p><strong>Vehicle:</strong> ${esc(d.header.vehicleName)}<br/>
+       <strong>Year:</strong> ${esc(d.header.year)} &nbsp; <strong>Model:</strong> ${esc(d.header.model)} &nbsp; <strong>Type:</strong> ${esc(d.header.type)}<br/>
+       <strong>Plate:</strong> ${esc(d.header.plate)} &nbsp; <strong>VIN:</strong> ${esc(d.header.vin)}<br/>
+       <strong>Driver:</strong> ${esc(d.header.driver)}<br/>
+       <strong>Cab:</strong> ${esc(d.header.cab)} &nbsp; <strong>Door:</strong> ${esc(d.header.door)}<br/>
+       <strong>Odometer/Hours:</strong> ${esc(d.header.odo)}<br/>
+       <strong>Notes:</strong> ${esc(d.header.notes||'-')}</p>
+
+    <h3 style="color:#00344c">Fluids & Levels</h3>
+    ${ul(d.fluids.checks)}<p><strong>Notes:</strong> ${esc(d.fluids.notes||'-')}</p><div>${imgs(d.fluids.photos)}</div>
+
+    <h3 style="color:#00344c">Exterior / Tires</h3>
+    ${ul(d.exterior.checks)}<p><strong>Notes:</strong> ${esc(d.exterior.notes||'-')}</p><div>${imgs(d.exterior.photos)}</div>
+
+    <h3 style="color:#00344c">Interior / Safety</h3>
+    ${ul(d.interior.checks)}<p><strong>Notes:</strong> ${esc(d.interior.notes||'-')}</p><div>${imgs(d.interior.photos)}</div>
+
+    ${d.rig?`<h3 style="color:#00344c">Drill Rig — Hydraulics & Deck</h3>${ul(d.rig.checks)}<p><strong>Notes:</strong> ${esc(d.rig.notes||'-')}</p><div>${imgs(d.rig.photos)}</div>`:''}
+
+    <h3 style="color:#00344c">Sign-Off</h3>
+    <p><strong>Condition:</strong> ${esc(d.signoff.condition||'-')} &nbsp; <strong>Ticket:</strong> ${esc(d.signoff.ticket||'-')}</p>
+    <p><strong>Remarks:</strong></p>
+    <pre style="white-space:pre-wrap;background:#f6f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:10px">${esc(d.signoff.remarks||'-')}</pre>
+
+    ${d.signatureData?`<h4 style="color:#00344c">Technician Signature</h4><img src="${d.signatureData}" alt="Technician signature" style="border:1px solid #ccc;border-radius:6px;max-width:320px"/>`:'<p><em>No signature captured.</em></p>'}
+  </body></html>`;
+}
+
+/* ===== ENHANCED EMAIL HTML render with inline embedded images for Outlook ===== */
+function renderEmailHTML(d){
+  const esc = s=>String(s||'').replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+
+  // Function to render images inline in email with proper Outlook compatibility
+  const imgs = arr => {
+    if (!arr || arr.length === 0) return '<p style="color:#6b7280;font-style:italic;font-size:14px;margin:0;">(No photos)</p>';
+    return `<table cellpadding="0" cellspacing="8" border="0" style="margin-top:8px;">
+      <tr>
+        ${arr.map((im, idx) => `
+          <td style="text-align:center;vertical-align:top;">
+            <!-- Images embedded as base64 data URLs for Outlook compatibility -->
+            <img src="${im.dataUrl}"
+                 alt="${esc(im.name||'photo')}"
+                 width="200"
+                 height="150"
+                 style="width:200px !important;height:150px !important;max-width:200px;border-radius:6px;border:2px solid #e5e7eb;display:block;margin:0 auto 4px auto;object-fit:cover;" />
+            <p style="margin:0;font-size:11px;color:#6b7280;">${esc(im.name||`Photo ${idx+1}`)}</p>
+          </td>
+          ${(idx + 1) % 3 === 0 ? '</tr><tr>' : ''}
+        `).join('')}
+      </tr>
+    </table>`;
+  };
+
+  const checkList = arr => arr.map(check =>
+    `<tr><td style="padding:4px 0;font-size:14px;color:#1f2937;">${esc(check)}</td></tr>`
+  ).join('');
 
   return `<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -476,59 +616,157 @@ function buildEmailHtml(meta, notes, processedImages) {
   <![endif]-->
   <style type="text/css">
     body { margin:0; padding:0; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
-    img { border:0; height:auto; line-height:100%; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+    img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; display:block; }
     table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
   </style>
+  <title>Vehicle Inspection Report</title>
 </head>
-<body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;line-height:1.6;color:#1a1a1a;background-color:#f5f5f5;">
-  <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;background:#f5f5f5;">
+<body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background-color:#f3f4f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3f4f6;padding:20px;">
     <tr>
-      <td align="center" style="padding:20px 0;">
-        <table role="presentation" style="width:700px;max-width:700px;border-collapse:collapse;border:0;border-spacing:0;background:#ffffff;border-radius:8px;">
+      <td align="center">
+        <table width="700" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
           <tr>
-            <td style="padding:32px;">
-              <!-- Header -->
-              <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
-                <tr>
-                  <td style="padding:0 0 16px 0;border-bottom:3px solid #0066cc;">
-                    <h1 style="margin:0;font-size:24px;font-weight:700;color:#0066cc;">🚛 Vehicle / Drill Rig Check-In Report</h1>
-                    <p style="margin:8px 0 0;font-size:13px;color:#666;">Certerra Inspection & Compliance Report</p>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Metadata -->
-              <table role="presentation" style="width:100%;border-collapse:collapse;margin:20px 0;background:#f8f9fa;border-radius:4px;">
-                <tr>
-                  <td style="padding:16px;">
-                    <p style="margin:0;font-size:14px;line-height:1.8;">
-                      <strong style="color:#333;">📅 Date:</strong> ${meta.date || '(n/a)'}<br>
-                      <strong style="color:#333;">👤 Inspector:</strong> ${meta.inspector || '(n/a)'}<br>
-                      <strong style="color:#333;">🚛 Vehicle/Rig:</strong> ${meta.vehicle || '(n/a)'}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- Inspection Sections -->
-              ${sectionHtml('Fluids & Levels', 'fluids', 1)}
-              ${sectionHtml('Exterior / Tires', 'exterior', 2)}
-              ${sectionHtml('Interior / Safety', 'interior', 3)}
-              ${sectionHtml('Rig — Hydraulics & Deck', 'rig', 4)}
-
-              <!-- Footer -->
-              <table role="presentation" style="width:100%;border-collapse:collapse;margin:24px 0 0;padding:16px 0;border-top:2px solid #e0e0e0;">
-                <tr>
-                  <td style="padding:0;">
-                    <p style="margin:0;font-size:12px;color:#999;text-align:center;">
-                      Generated by Certerra Check-In System on ${new Date().toLocaleString()}<br>
-                      This is an automated compliance report. Please retain for your records.
-                    </p>
-                  </td>
-                </tr>
-              </table>
+            <td style="background:linear-gradient(135deg,#004c6d,#00344c);padding:28px 24px;text-align:center;">
+              <h1 style="color:#ffffff;margin:0 0 8px 0;font-size:28px;font-weight:700;">CERTERRA</h1>
+              <h2 style="color:#ffffff;margin:0 0 4px 0;font-size:20px;font-weight:600;">Vehicle & Drill Rig Inspection</h2>
+              <p style="color:rgba(255,255,255,0.9);margin:0;font-size:15px;">${esc(d.header.vehicleName)} — ${esc(d.header.date)}</p>
             </td>
           </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:28px 24px;">
+
+              <!-- Report Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background-color:#f9fafb;padding:16px;border-radius:8px;border-left:4px solid #00a4b8;">
+                    <p style="margin:0 0 8px 0;font-size:15px;color:#374151;"><strong>Report Generated:</strong> ${new Date().toLocaleString()}</p>
+                    <p style="margin:0 0 8px 0;font-size:15px;color:#374151;"><strong>Inspection Date:</strong> ${esc(d.header.date)}</p>
+                    <p style="margin:0;font-size:15px;color:#374151;"><strong>Technician:</strong> ${esc(d.header.inspector)}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Vehicle Information -->
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">📄 Vehicle Information</h3>
+              <table width="100%" cellpadding="8" cellspacing="0" border="0" style="margin-bottom:24px;border:1px solid #e5e7eb;border-radius:8px;">
+                <tr style="background-color:#f9fafb;">
+                  <td style="font-weight:600;color:#374151;font-size:14px;width:150px;padding:10px;">Vehicle:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;">${esc(d.header.vehicleName)}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Year / Model:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.year)} ${esc(d.header.model)}</td>
+                </tr>
+                <tr style="background-color:#f9fafb;">
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Type:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.type)}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Plate / VIN:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.plate)} / ${esc(d.header.vin)}</td>
+                </tr>
+                <tr style="background-color:#f9fafb;">
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Driver:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.driver)}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Cab / Door:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.cab)} / ${esc(d.header.door)}</td>
+                </tr>
+                <tr style="background-color:#f9fafb;">
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Odometer/Hours:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.odo)}</td>
+                </tr>
+                ${d.header.notes ? `
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">Notes:</td>
+                  <td style="color:#1f2937;font-size:14px;padding:10px;border-top:1px solid #e5e7eb;">${esc(d.header.notes)}</td>
+                </tr>
+                ` : ''}
+              </table>
+
+              <!-- Fluids & Levels -->
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">🧪 Fluids & Levels</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+                ${checkList(d.fluids.checks)}
+              </table>
+              ${d.fluids.notes ? `<p style="margin:0 0 12px 0;padding:12px;background-color:#f9fafb;border-radius:6px;border-left:3px solid #00a4b8;font-size:14px;color:#374151;"><strong>Notes:</strong> ${esc(d.fluids.notes)}</p>` : ''}
+              ${imgs(d.fluids.photos)}
+              <div style="margin-bottom:28px;"></div>
+
+              <!-- Exterior / Tires -->
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">🚚 Exterior / Tires</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+                ${checkList(d.exterior.checks)}
+              </table>
+              ${d.exterior.notes ? `<p style="margin:0 0 12px 0;padding:12px;background-color:#f9fafb;border-radius:6px;border-left:3px solid #00a4b8;font-size:14px;color:#374151;"><strong>Notes:</strong> ${esc(d.exterior.notes)}</p>` : ''}
+              ${imgs(d.exterior.photos)}
+              <div style="margin-bottom:28px;"></div>
+
+              <!-- Interior / Safety -->
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">🧰 Interior / Safety</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+                ${checkList(d.interior.checks)}
+              </table>
+              ${d.interior.notes ? `<p style="margin:0 0 12px 0;padding:12px;background-color:#f9fafb;border-radius:6px;border-left:3px solid #00a4b8;font-size:14px;color:#374151;"><strong>Notes:</strong> ${esc(d.interior.notes)}</p>` : ''}
+              ${imgs(d.interior.photos)}
+              <div style="margin-bottom:28px;"></div>
+
+              <!-- Drill Rig (if applicable) -->
+              ${d.rig ? `
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">⚙️ Drill Rig — Hydraulics & Deck</h3>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+                ${checkList(d.rig.checks)}
+              </table>
+              ${d.rig.notes ? `<p style="margin:0 0 12px 0;padding:12px;background-color:#f9fafb;border-radius:6px;border-left:3px solid #00a4b8;font-size:14px;color:#374151;"><strong>Notes:</strong> ${esc(d.rig.notes)}</p>` : ''}
+              ${imgs(d.rig.photos)}
+              <div style="margin-bottom:28px;"></div>
+              ` : ''}
+
+              <!-- Sign-Off -->
+              <h3 style="color:#004c6d;font-size:18px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:2px solid #004c6d;">✅ Sign-Off & Condition</h3>
+              <table width="100%" cellpadding="12" cellspacing="0" border="0" style="margin-bottom:16px;background-color:#f9fafb;border-radius:8px;">
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;width:150px;">Condition:</td>
+                  <td style="color:#1f2937;font-size:14px;">${esc(d.signoff.condition||'Not specified')}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:#374151;font-size:14px;border-top:1px solid #e5e7eb;padding-top:12px;">Ticket / WO:</td>
+                  <td style="color:#1f2937;font-size:14px;border-top:1px solid #e5e7eb;padding-top:12px;">${esc(d.signoff.ticket||'N/A')}</td>
+                </tr>
+              </table>
+              ${d.signoff.remarks ? `
+              <div style="margin-bottom:16px;">
+                <p style="margin:0 0 8px 0;font-weight:600;color:#374151;font-size:14px;">Remarks:</p>
+                <div style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:12px;white-space:pre-wrap;font-size:14px;color:#1f2937;">${esc(d.signoff.remarks)}</div>
+              </div>
+              ` : ''}
+
+              <!-- Signature -->
+              ${d.signatureData ? `
+              <div style="margin-top:20px;">
+                <p style="margin:0 0 8px 0;font-weight:600;color:#374151;font-size:14px;">Technician Signature:</p>
+                <img src="${d.signatureData}" alt="Technician signature" width="350" height="150" style="width:350px !important;height:150px !important;border:2px solid #e5e7eb;border-radius:6px;max-width:350px;display:block;" />
+              </div>
+              ` : '<p style="color:#9ca3af;font-style:italic;font-size:14px;margin:16px 0 0 0;">(No signature captured)</p>'}
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f9fafb;padding:20px;text-align:center;border-top:1px solid #e5e7eb;">
+              <p style="margin:0;font-size:13px;color:#6b7280;">
+                © ${new Date().getFullYear()} Certerra I&M — Vehicle & Drill Rig Inspection System
+              </p>
+            </td>
+          </tr>
+
         </table>
       </td>
     </tr>
@@ -537,431 +775,426 @@ function buildEmailHtml(meta, notes, processedImages) {
 </html>`;
 }
 
-/* ===========================================================
-   WORD REPORT (.docx) via docx library
-=========================================================== */
-async function buildDocx(meta, notes, processedImageData) {
-  const { Document, Packer, Paragraph, HeadingLevel, TextRun, ImageRun, AlignmentType, BorderStyle } = docx;
+/* ===== WORD DOCUMENT (.docx) generation with docx.js - FIXED for proper image embedding ===== */
+async function generateWordDocx(d) {
+  try {
+    showStatus('Generating Word document with embedded images...', 'info');
 
-  const children = [
-    new Paragraph({
-      text: 'Vehicle / Drill Rig Check-In Report',
-      heading: HeadingLevel.TITLE,
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 }
-    }),
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 400 },
-      children: [
-        new TextRun({ text: 'Certerra Inspection & Compliance Report', size: 20, color: '666666' })
-      ]
-    }),
-    new Paragraph({
-      spacing: { after: 300 },
-      border: {
-        bottom: { color: '0066cc', space: 1, style: BorderStyle.SINGLE, size: 12 }
-      },
-      children: [
-        new TextRun({ text: '📅 Date: ', bold: true }),
-        new TextRun({ text: meta.date || '(n/a)' }),
-        new TextRun({ text: '  •  ' }),
-        new TextRun({ text: '👤 Inspector: ', bold: true }),
-        new TextRun({ text: meta.inspector || '(n/a)' }),
-        new TextRun({ text: '  •  ' }),
-        new TextRun({ text: '🚛 Vehicle: ', bold: true }),
-        new TextRun({ text: meta.vehicle || '(n/a)' })
-      ]
-    }),
-    new Paragraph({ text: '' })
-  ];
+    const { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, ImageRun, BorderStyle } = docx;
 
-  const sections = [
-    { title: '1. Fluids & Levels', key: 'fluids' },
-    { title: '2. Exterior / Tires', key: 'exterior' },
-    { title: '3. Interior / Safety', key: 'interior' },
-    { title: '4. Rig — Hydraulics & Deck', key: 'rig' }
-  ];
+    const children = [];
 
-  for (const section of sections) {
-    // Section title
+    // Title
     children.push(
       new Paragraph({
-        text: section.title,
-        heading: HeadingLevel.HEADING_2,
-        spacing: { before: 400, after: 200 }
+        text: "CERTERRA I&M",
+        heading: HeadingLevel.TITLE,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 }
       })
     );
 
-    // Notes
-    const noteText = notes[section.key] || '(No notes provided)';
     children.push(
       new Paragraph({
-        spacing: { after: 200 },
+        text: "Vehicle & Drill Rig Inspection Report",
+        heading: HeadingLevel.HEADING_1,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 }
+      })
+    );
+
+    // Report metadata
+    children.push(
+      new Paragraph({
         children: [
-          new TextRun({ text: 'Notes: ', bold: true }),
-          new TextRun({ text: noteText })
-        ]
+          new TextRun({ text: "Report Generated: ", bold: true }),
+          new TextRun(new Date().toLocaleString())
+        ],
+        spacing: { after: 100 }
       })
     );
 
-    // Images for this section
-    const sectionImages = processedImageData[section.key] || [];
-    if (sectionImages.length > 0) {
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Inspection Date: ", bold: true }),
+          new TextRun(d.header.date)
+        ],
+        spacing: { after: 100 }
+      })
+    );
+
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Technician: ", bold: true }),
+          new TextRun(d.header.inspector)
+        ],
+        spacing: { after: 400 }
+      })
+    );
+
+    // Vehicle Information Table
+    children.push(
+      new Paragraph({
+        text: "Vehicle Information",
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 200, after: 200 }
+      })
+    );
+
+    const vehicleInfo = [
+      ['Vehicle', d.header.vehicleName],
+      ['Year / Model', `${d.header.year} ${d.header.model}`],
+      ['Type', d.header.type],
+      ['Plate', d.header.plate],
+      ['VIN', d.header.vin],
+      ['Driver', d.header.driver],
+      ['Cab / Door', `${d.header.cab} / ${d.header.door}`],
+      ['Odometer/Hours', d.header.odo]
+    ];
+
+    if (d.header.notes) {
+      vehicleInfo.push(['Notes', d.header.notes]);
+    }
+
+    children.push(
+      new Table({
+        rows: vehicleInfo.map(([label, value]) =>
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [new Paragraph({ text: label, bold: true })],
+                width: { size: 30, type: WidthType.PERCENTAGE }
+              }),
+              new TableCell({
+                children: [new Paragraph(String(value || ''))],
+                width: { size: 70, type: WidthType.PERCENTAGE }
+              })
+            ]
+          })
+        ),
+        width: { size: 100, type: WidthType.PERCENTAGE }
+      })
+    );
+
+    children.push(new Paragraph({ text: "", spacing: { after: 300 } }));
+
+    // Helper function to add section with photos
+    async function addSection(title, checksArr, notes, photos) {
       children.push(
         new Paragraph({
-          text: '📷 Photos:',
-          spacing: { before: 200, after: 100 },
-          children: [new TextRun({ text: '📷 Photos:', bold: true })]
+          text: title,
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 200, after: 200 }
         })
       );
 
-      for (const imgData of sectionImages) {
-        try {
-          // Add image with proper sizing for Word
-          // docx library expects dimensions in EMUs (English Metric Units)
-          // 1 inch = 914400 EMUs, 1 pixel ≈ 9525 EMUs (at 96 DPI)
-          const widthEMU = CONFIG.DOCX_IMAGE_WIDTH * 9525;
-          const heightEMU = Math.round((imgData.height / imgData.width) * CONFIG.DOCX_IMAGE_WIDTH * 9525);
+      checksArr.forEach(check => {
+        children.push(new Paragraph({ text: check, bullet: { level: 0 } }));
+      });
 
-          children.push(
-            new Paragraph({
-              spacing: { after: 100 },
-              children: [
-                new ImageRun({
-                  data: imgData.arrayBuffer,
-                  transformation: {
-                    width: widthEMU,
-                    height: heightEMU
-                  }
-                })
-              ]
-            })
-          );
-
-          // Caption
-          children.push(
-            new Paragraph({
-              text: imgData.filename,
-              spacing: { after: 200 },
-              italics: true,
-              children: [
-                new TextRun({ text: imgData.filename, size: 18, italics: true, color: '666666' })
-              ]
-            })
-          );
-        } catch (err) {
-          console.error('Failed to add image to Word doc:', err);
-          children.push(
-            new Paragraph({
-              text: `[Error adding image: ${imgData.filename}]`,
-              spacing: { after: 200 }
-            })
-          );
-        }
+      if (notes) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: "Notes: ", bold: true }),
+              new TextRun(notes)
+            ],
+            spacing: { before: 200, after: 200 }
+          })
+        );
       }
-    }
 
-    children.push(new Paragraph({ text: '' }));
-  }
+      // Add photos with proper embedding for Word
+      if (photos && photos.length > 0) {
+        children.push(new Paragraph({ text: "Photos:", bold: true, spacing: { before: 200, after: 100 } }));
+        for (const photo of photos) {
+          try {
+            // Convert data URL to array buffer
+            const base64Data = photo.dataUrl.split(',')[1];
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
 
-  // Footer
-  children.push(
-    new Paragraph({
-      spacing: { before: 400 },
-      border: {
-        top: { color: 'e0e0e0', space: 1, style: BorderStyle.SINGLE, size: 6 }
-      },
-      children: [
-        new TextRun({
-          text: `Generated by Certerra Check-In System on ${new Date().toLocaleString()}`,
-          size: 16,
-          color: '999999'
-        })
-      ]
-    })
-  );
+            // Fixed: Proper dimensions for Word (400px width, auto height)
+            children.push(
+              new Paragraph({
+                children: [
+                  new ImageRun({
+                    data: bytes,
+                    transformation: {
+                      width: 400,
+                      height: 300
+                    }
+                  })
+                ],
+                spacing: { after: 100 }
+              })
+            );
 
-  const doc = new Document({
-    sections: [{
-      properties: {
-        page: {
-          margin: {
-            top: 1440,    // 1 inch
-            right: 1440,
-            bottom: 1440,
-            left: 1440
+            children.push(
+              new Paragraph({
+                text: photo.name || 'Photo',
+                italics: true,
+                spacing: { after: 200 }
+              })
+            );
+          } catch (error) {
+            console.error(`Error embedding image ${photo.name}:`, error);
+            children.push(
+              new Paragraph({
+                text: `[Image: ${photo.name || 'Photo'} - could not be embedded]`,
+                italics: true,
+                spacing: { after: 200 }
+              })
+            );
           }
         }
-      },
-      children
-    }]
-  });
+      }
 
-  return await Packer.toBlob(doc);
-}
+      children.push(new Paragraph({ text: "", spacing: { after: 300 } }));
+    }
 
-/* ===========================================================
-   EML BUILDER (multipart/mixed with multipart/related)
-=========================================================== */
-function buildEml({ from, to, cc, subject, html, inlineImages, attachments }) {
-  const CRLF = '\r\n';
-  const bMixed = '----=_Mixed_' + Math.random().toString(36).slice(2);
-  const bRelated = '----=_Related_' + Math.random().toString(36).slice(2);
+    // Add all sections
+    await addSection('Fluids & Levels', d.fluids.checks, d.fluids.notes, d.fluids.photos);
+    await addSection('Exterior / Tires', d.exterior.checks, d.exterior.notes, d.exterior.photos);
+    await addSection('Interior / Safety', d.interior.checks, d.interior.notes, d.interior.photos);
 
-  const lines = [];
-  lines.push(`From: ${from || 'noreply@certerra.com'}`);
-  if (to) lines.push(`To: ${to}`);
-  if (cc) lines.push(`Cc: ${cc}`);
-  lines.push(`Subject: ${subject || 'Vehicle/Rig Check-In Report'}`);
-  lines.push(`Date: ${new Date().toUTCString()}`);
-  lines.push(`MIME-Version: 1.0`);
-  lines.push(`Content-Type: multipart/mixed; boundary="${bMixed}"`);
-  lines.push(`X-Mailer: Certerra CheckIn v1.0`);
-  lines.push('');
+    if (d.rig) {
+      await addSection('Drill Rig — Hydraulics & Deck', d.rig.checks, d.rig.notes, d.rig.photos);
+    }
 
-  // Part 1: multipart/related (HTML + inline images)
-  lines.push(`--${bMixed}`);
-  lines.push(`Content-Type: multipart/related; type="text/html"; boundary="${bRelated}"`);
-  lines.push('');
+    // Sign-Off
+    children.push(
+      new Paragraph({
+        text: "Sign-Off & Condition",
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 200, after: 200 }
+      })
+    );
 
-  // HTML body
-  lines.push(`--${bRelated}`);
-  lines.push('Content-Type: text/html; charset="utf-8"');
-  lines.push('Content-Transfer-Encoding: quoted-printable');
-  lines.push('');
-  lines.push(html);
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Condition: ", bold: true }),
+          new TextRun(d.signoff.condition || 'Not specified')
+        ],
+        spacing: { after: 100 }
+      })
+    );
 
-  // Inline images (CID references)
-  for (const img of inlineImages) {
-    lines.push(`--${bRelated}`);
-    lines.push(`Content-Type: ${img.mime}`);
-    lines.push('Content-Transfer-Encoding: base64');
-    lines.push(`Content-ID: <${img.cid}>`);
-    lines.push(`Content-Disposition: inline; filename="${img.filename}"`);
-    lines.push('');
-    lines.push(wrap76(img.base64));
-  }
-  lines.push(`--${bRelated}--`);
-  lines.push('');
+    children.push(
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Ticket / Work Order: ", bold: true }),
+          new TextRun(d.signoff.ticket || 'N/A')
+        ],
+        spacing: { after: 200 }
+      })
+    );
 
-  // Part 2+: File attachments
-  for (const att of attachments) {
-    const mime = att.mime || 'application/octet-stream';
-    const filename = att.filename || 'attachment.' + extFromMime(mime);
-    lines.push(`--${bMixed}`);
-    lines.push(`Content-Type: ${mime}; name="${filename}"`);
-    lines.push('Content-Transfer-Encoding: base64');
-    lines.push(`Content-Disposition: attachment; filename="${filename}"`);
-    lines.push('');
-    lines.push(wrap76(att.base64));
-  }
+    if (d.signoff.remarks) {
+      children.push(
+        new Paragraph({
+          text: "Remarks:",
+          bold: true,
+          spacing: { before: 100, after: 100 }
+        })
+      );
+      children.push(
+        new Paragraph({
+          text: d.signoff.remarks,
+          spacing: { after: 300 }
+        })
+      );
+    }
 
-  lines.push(`--${bMixed}--`);
-  lines.push('');
+    // Signature
+    if (d.signatureData) {
+      children.push(
+        new Paragraph({
+          text: "Technician Signature",
+          heading: HeadingLevel.HEADING_3,
+          spacing: { before: 200, after: 200 }
+        })
+      );
 
-  return new Blob([lines.join(CRLF)], { type: 'message/rfc822' });
-}
-
-/* ===========================================================
-   IMAGE GATHERING & PROCESSING
-=========================================================== */
-async function gatherAndProcessImages(photosBySection) {
-  const processed = {
-    fluids: [],
-    exterior: [],
-    interior: [],
-    rig: []
-  };
-
-  const inlineImages = [];
-  let cidIndex = 1;
-
-  for (const [sectionKey, fileList] of Object.entries(photosBySection)) {
-    for (const { file, prefix, originalName } of fileList) {
       try {
-        setStatus(`Processing image: ${originalName}...`, 'success');
+        const base64Data = d.signatureData.split(',')[1];
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
 
-        // Process image (resize, optimize)
-        const processed Image = await processImageForEmail(file);
-
-        // Convert to base64 for email
-        const base64 = await blobToBase64(processedImage.blob);
-
-        // Get array buffer for Word doc
-        const arrayBuffer = await processedImage.blob.arrayBuffer();
-
-        const filename = `${prefix}_${originalName}`;
-        const cid = `img_${cidIndex}_${Date.now()}`;
-
-        // For email (CID reference)
-        inlineImages.push({
-          cid,
-          mime: processedImage.mime,
-          filename,
-          base64,
-          section: sectionKey,
-          width: processedImage.width,
-          height: processedImage.height
-        });
-
-        // For Word doc
-        processed[sectionKey].push({
-          filename,
-          arrayBuffer,
-          width: processedImage.width,
-          height: processedImage.height
-        });
-
-        cidIndex++;
-      } catch (err) {
-        console.error(`Failed to process image ${originalName}:`, err);
-        setStatus(`Warning: Could not process image ${originalName}`, 'warning');
+        children.push(
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: bytes,
+                transformation: {
+                  width: 350,
+                  height: 150
+                }
+              })
+            ],
+            spacing: { after: 300 }
+          })
+        );
+      } catch (error) {
+        console.error('Error embedding signature:', error);
+        children.push(
+          new Paragraph({
+            text: "[Signature image could not be embedded]",
+            italics: true,
+            spacing: { after: 300 }
+          })
+        );
       }
-    }
-  }
-
-  return { inlineImages, processedImageData: processed };
-}
-
-/* ===========================================================
-   MAIN HANDLERS
-=========================================================== */
-async function handleSubmitEmail() {
-  try {
-    if (!validateInputs()) return;
-
-    setStatus('Preparing email with embedded images...', 'success');
-
-    const { to, cc } = collectRecipients();
-    const meta = collectMeta();
-    const notes = collectNotes();
-    const photosBySection = collectPhotoFiles();
-    const extraFiles = collectExtraAttachments();
-
-    // Process images for both email and Word
-    const { inlineImages, processedImageData } = await gatherAndProcessImages(photosBySection);
-
-    setStatus(`Processed ${inlineImages.length} images. Generating Word report...`, 'success');
-
-    // Build HTML for email body
-    const html = buildEmailHtml(meta, notes, inlineImages);
-
-    // Generate Word document
-    const docxBlob = await buildDocx(meta, notes, processedImageData);
-    const docxBase64 = await blobToBase64(docxBlob);
-    const docxName = `${safeName(meta.vehicle)}_CheckIn_${nowStamp()}.docx`;
-
-    setStatus('Building email message...', 'success');
-
-    // Prepare attachments
-    const attachments = [{
-      mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      filename: docxName,
-      base64: docxBase64
-    }];
-
-    // Add extra attachments
-    for (const { file, name } of extraFiles) {
-      const dataURL = await fileToDataURL(file);
-      const parts = dataURLParts(dataURL);
-      if (parts) {
-        attachments.push({
-          mime: parts.mime || file.type || 'application/octet-stream',
-          filename: name,
-          base64: parts.base64
-        });
-      }
+    } else {
+      children.push(
+        new Paragraph({
+          text: "(No signature captured)",
+          italics: true,
+          spacing: { after: 300 }
+        })
+      );
     }
 
-    // Build EML
-    const subject = meta.subject || `Vehicle/Rig Check-In — ${meta.vehicle} (${meta.date})`;
-    const emlBlob = buildEml({
-      from: 'noreply@certerra.com',
-      to,
-      cc,
-      subject,
-      html,
-      inlineImages,
-      attachments
+    // Footer
+    children.push(
+      new Paragraph({
+        text: `© ${new Date().getFullYear()} Certerra I&M — Vehicle & Drill Rig Inspection System`,
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 600 },
+        italics: true
+      })
+    );
+
+    // Create document
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: children
+      }]
     });
 
-    // Download EML file
-    const emlName = `${safeName(meta.vehicle)}_CheckIn_${nowStamp()}.eml`;
-    downloadBlob(emlBlob, emlName);
+    return doc;
 
-    setStatus(
-      `✅ Email draft generated successfully!\n\n` +
-      `File: ${emlName}\n` +
-      `Images: ${inlineImages.length} embedded inline\n` +
-      `Attachments: ${attachments.length} (including Word report)\n\n` +
-      `Open the .eml file to launch Outlook, review, and send.`,
-      'success'
-    );
-  } catch (err) {
-    console.error('Email generation error:', err);
-    setStatus(`❌ Error: ${err.message}\n\nSee console for details.`, 'error');
+  } catch (error) {
+    console.error('Error generating Word document:', error);
+    showStatus('Error generating Word document: ' + error.message, 'error');
+    throw error;
   }
 }
 
-async function handleExportDocx() {
-  try {
-    if (!validateInputs()) return;
-
-    setStatus('Generating Word report...', 'success');
-
-    const meta = collectMeta();
-    const notes = collectNotes();
-    const photosBySection = collectPhotoFiles();
-
-    // Process images
-    const { processedImageData } = await gatherAndProcessImages(photosBySection);
-
-    // Generate Word doc
-    const docxBlob = await buildDocx(meta, notes, processedImageData);
-    const docxName = `${safeName(meta.vehicle)}_CheckIn_${nowStamp()}.docx`;
-
-    downloadBlob(docxBlob, docxName);
-
-    const totalImages = Object.values(processedImageData).reduce((sum, arr) => sum + arr.length, 0);
-    setStatus(
-      `✅ Word report exported successfully!\n\n` +
-      `File: ${docxName}\n` +
-      `Images: ${totalImages} embedded`,
-      'success'
-    );
-  } catch (err) {
-    console.error('Word export error:', err);
-    setStatus(`❌ Error: ${err.message}\n\nSee console for details.`, 'error');
-  }
+/* ===== download helpers ===== */
+function download(filename,mime,content){
+  const blob=new Blob([content],{type:mime});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
-function handleClearForm() {
-  if (confirm('Clear all fields and reset the form?')) {
-    location.reload();
-  }
-}
-
-/* ===========================================================
-   INITIALIZATION
-=========================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-  // Set today's date by default
-  const today = new Date().toISOString().split('T')[0];
-  byId('date').value = today;
-
-  // Event listeners
-  byId('btn-submit').addEventListener('click', handleSubmitEmail);
-  byId('btn-docx').addEventListener('click', handleExportDocx);
-  byId('btn-clear').addEventListener('click', handleClearForm);
-
-  console.log('✅ Certerra Check-In Form initialized');
-  console.log('📋 Features:');
-  console.log('  - Outlook-compatible email with inline images');
-  console.log('  - Word document generation with embedded photos');
-  console.log('  - Automatic image optimization and resizing');
-  console.log('  - Multi-section inspection reporting');
+/* ===== buttons ===== */
+q('btnTxt').addEventListener('click',()=>{
+  const d=collect();
+  const txt=renderTXT(d);
+  const name=`VehicleInspection_${(d.header.plate||'Vehicle').replace(/\s+/g,'_')}_${d.header.date}.txt`;
+  download(name,'text/plain',txt);
+  showStatus('TXT file downloaded successfully', 'success');
 });
+
+q('btnDoc').addEventListener('click',()=>{
+  const d=collect();
+  const html=renderDOC(d);
+  const name=`VehicleInspection_${(d.header.plate||'Vehicle').replace(/\s+/g,'_')}_${d.header.date}.doc`;
+  download(name,'application/msword',html);
+  showStatus('DOC (HTML) file downloaded successfully', 'success');
+});
+
+// Email HTML with embedded images (base64 data URLs work in Outlook)
+q('btnEmailHTML').addEventListener('click',()=>{
+  const d=collect();
+  if (!d.header.inspector) {
+    showStatus('Please enter technician name before generating email', 'error');
+    return;
+  }
+  const html=renderEmailHTML(d);
+  const name=`VehicleInspection_Email_${(d.header.plate||'Vehicle').replace(/\s+/g,'_')}_${d.header.date}.html`;
+  download(name,'text/html',html);
+  showStatus('Email HTML downloaded! Open in Outlook to send with all images embedded inline.', 'success');
+});
+
+// Export Word document with embedded images
+q('btnWordDocx').addEventListener('click', async ()=>{
+  const d=collect();
+  if (!d.header.inspector) {
+    showStatus('Please enter technician name before generating report', 'error');
+    return;
+  }
+
+  try {
+    const doc = await generateWordDocx(d);
+    const blob = await docx.Packer.toBlob(doc);
+    const name=`VehicleInspection_${(d.header.plate||'Vehicle').replace(/\s+/g,'_')}_${d.header.date}.docx`;
+
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    showStatus('Word document (.docx) downloaded successfully with embedded images!', 'success');
+  } catch (error) {
+    console.error('Error generating Word document:', error);
+    showStatus('Error generating Word document: ' + error.message, 'error');
+  }
+});
+
+// Simple email (plain text via mailto)
+q('btnEmail').addEventListener('click',()=>{
+  const d=collect();
+  if (!d.header.emailTo) {
+    showStatus('Please enter email recipient before sending', 'error');
+    return;
+  }
+  const to = encodeURIComponent(d.header.emailTo||"");
+  const cc = encodeURIComponent(d.header.emailCc||"");
+  const subject = encodeURIComponent(`VEHICLE INSPECTION - ${d.header.vehicleName} - ${d.header.date}`);
+  const body = encodeURIComponent(renderTXT(d));
+  let url = `mailto:${to}?subject=${subject}&body=${body}`;
+  if (cc) url += `&cc=${cc}`;
+  window.location.href = url;
+  showStatus('Email client opened with plain text report', 'info');
+});
+
+q('btnClear').addEventListener('click',()=>{
+  if (!confirm('Clear all fields, photos, and signature? This cannot be undone.')) return;
+
+  ['date','inspector','odometer','emailTo','emailCc','f_year','f_model','f_type','f_plate','f_vin','f_driver','f_notes','f_cab','f_door',
+   'fluids-notes','ex-notes','in-notes','rig-notes','condition','ticket','remarks']
+   .forEach(id=>{ const el=q(id); if(el) el.value=""; });
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb=>cb.checked=false);
+  document.querySelectorAll('input[type="file"]').forEach(inp=>inp.value="");
+  Object.keys(buckets).forEach(k=>buckets[k]=[]);
+  document.querySelectorAll('.thumbs').forEach(el=>el.innerHTML="");
+  resizeCanvas(); sigDirty=false;
+  showStatus('All fields cleared', 'success');
+  announce("Cleared all fields, photos, and signature");
+});
+
+/* ===== init ===== */
+(function init(){
+  renderVehicleOptions();
+  q('vehicleSelect').addEventListener('change',e=>loadVehicle(e.target.value|0));
+  q('date').value = new Date().toISOString().slice(0,10);
+  loadVehicle(0);
+})();
 </script>
 </body>
 </html>
