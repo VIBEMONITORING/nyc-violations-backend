@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <!--[if mso]>
+  <xml>
+    <o:OfficeDocumentSettings>
+      <o:AllowPNG/>
+      <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+  </xml>
+  <![endif]-->
+  <title>Certerra — Asset Manager Mobile Check‑In (Serial‑Only, Live SP)</title>
+  <style type="text/css">
+    /* Email client resets */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+
+    /* Base styles */
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      background-color: #0b1720 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      color: #f9fafb;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Outlook-specific styles */
+    .outlook-bg { background-color: #0b1720; }
+    .card-bg { background-color: #111827; }
+    .surface-bg { background-color: #0f172a; }
+
+    /* Typography */
+    h1, h2, h3 { margin: 0; padding: 0; font-weight: 600; }
+    h1 { font-size: 16px; line-height: 1.3; }
+    h2 { font-size: 15px; color: #cfe4ff; margin-bottom: 12px; }
+
+    /* Form elements */
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #0f172a;
+      color: #f9fafb;
+      border: 1px solid #1f2a37;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 14px;
+      box-sizing: border-box;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    textarea {
+      border-radius: 12px;
+      min-height: 60px;
+    }
+
+    /* Button styles */
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      background-color: #00a4b8;
+      color: #06121a !important;
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid #334155;
+      color: #e2e8f0 !important;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* Helper text */
+    .help-text {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* Status indicators */
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .status-ok { background-color: #10b981; }
+    .status-warn { background-color: #f59e0b; }
+    .status-err { background-color: #ef4444; }
+
+    /* Inline code */
+    code {
+      background-color: #0c1a25;
+      border: 1px solid #183246;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+    }
+
+    /* Label styling */
+    label {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    /* Message areas */
+    .message {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    /* Responsive */
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .btn { display: block; width: 100%; margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #0b1720; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;">
+  <!--[if mso]>
+  <center>
+  <table role="presentation" width="700" cellpadding="0" cellspacing="0" border="0" style="width: 700px;">
+  <tr>
+  <td>
+  <![endif]-->
+
+  <!-- Main container -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 700px; margin: 0 auto; background-color: #0b1720;">
+    <tr>
+      <td>
+
+        <!-- Header -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #004c6d, #00344c); border-radius: 18px; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td style="vertical-align: middle; width: 100px;">
+                    <!-- Logo - Using base64 embedded image for maximum compatibility -->
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAwCAYAAADZ9HK+AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDcvMjkvMTbvhp52AAAFKUlEQVR4nO2cS2wbVRSGv3Ecx3HsOK+mrVS1aqVSqYhKRYgFQkJCYsOCBWLBggUbNixYsGDDhgULFmxYsGHBggULNixYsGDDggVCQkJCQkJCQkKoVKlSS1PVbZo4jp04jj0s7nUynnk4M2Mnruf+Uksze+beO//ce8+559wZQ5IkCQGBQKAQEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAH8D/gOvLV3P8gN3NgAAAABJRU5ErkJggg=="
+                         alt="Certerra Logo"
+                         width="120"
+                         height="35"
+                         style="display: block; max-width: 120px; height: auto; background-color: rgba(255,255,255,0.1); padding: 4px; border-radius: 6px;">
+                  </td>
+                  <td style="vertical-align: middle; padding-left: 16px;">
+                    <h1 style="margin: 0; padding: 0; font-size: 16px; font-weight: 600; color: #ffffff; line-height: 1.3;">
+                      Asset Manager — Mobile Check‑In
+                    </h1>
+                    <p style="margin: 4px 0 0 0; padding: 0; font-size: 12px; color: rgba(255,255,255,0.8);">
+                      Serial‑only: update an existing item by Serial number (LIVE SharePoint)
+                    </p>
+                  </td>
+                  <td style="vertical-align: middle; text-align: right; width: 100px;">
+                    <a href="#" class="btn btn-secondary" id="allItemsLink" style="font-size: 12px; padding: 8px 12px; display: inline-block; text-decoration: none;">All Items</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Config Notice Card -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #111827; border: 1px solid #1f2a37; border-radius: 18px; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 16px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 8px 0; font-size: 12px;">
+                      Connected site: <span id="siteUrlText" style="opacity: 0.8;"></span>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                      This version <strong>updates</strong> the first list item whose <em>Serial number</em> matches. <strong>Creation is disabled</strong>; an existing record is required.
+                    </p>
+                    <p style="margin: 8px 0 0 0; font-size: 11px; color: #9ca3af;">
+                      Site: <code id="cfgSite" style="font-size: 11px;"></code> • List: <code id="cfgList" style="font-size: 11px;"></code>
+                    </p>
+                  </td>
+                  <td style="text-align: right; vertical-align: top; white-space: nowrap; padding-left: 12px;">
+                    <a href="#" onclick="refreshMeta(); return false;" class="btn btn-secondary" style="font-size: 11px; padding: 8px 12px; margin-bottom: 4px; display: inline-block;">Refresh metadata</a><br>
+                    <a href="#" onclick="runHealthCheck(); return false;" class="btn btn-secondary" style="font-size: 11px; padding: 8px 12px; display: inline-block;">Run health check</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Connection Health Card -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #111827; border: 1px solid #1f2a37; border-radius: 18px; margin-bottom: 16px;" id="healthCard">
+          <tr>
+            <td style="padding: 20px;">
+              <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #cfe4ff; font-weight: 600;">Connection Health</h2>
+              <div id="healthList" style="font-size: 12px; line-height: 1.6;">
+                <!-- Health status will be populated here -->
+              </div>
+              <p style="margin: 12px 0 0 0; font-size: 11px; color: #9ca3af; line-height: 1.4;">
+                If you see "Failed to fetch", make sure this file is hosted on <em>the same SharePoint site</em> and opened while signed in.
+                Opening from <code>file://</code> or a different domain will block cookies/CORS.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Deployment Helper Card -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #111827; border: 1px solid #1f2a37; border-radius: 18px; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 20px;">
+              <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #cfe4ff; font-weight: 600;">Deployment Helper</h2>
+              <ol style="margin: 0 0 12px 0; padding-left: 24px; font-size: 12px; line-height: 1.6;">
+                <li style="margin-bottom: 6px;">Upload this HTML into your site's <strong>Site Assets</strong> library.</li>
+                <li style="margin-bottom: 6px;">Open the file from that SharePoint URL (same origin).</li>
+                <li>Use the <strong>Run health check</strong> — all checks should be green.</li>
+              </ol>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-right: 8px; padding-bottom: 8px;">
+                    <a href="#" id="openSiteAssets" target="_blank" class="btn btn-secondary" style="font-size: 11px; padding: 8px 12px; display: inline-block;">Open Site Assets</a>
+                  </td>
+                  <td style="padding-right: 8px; padding-bottom: 8px;">
+                    <a href="#" id="openAllItems" target="_blank" class="btn btn-secondary" style="font-size: 11px; padding: 8px 12px; display: inline-block;">Open Asset manager — All Items</a>
+                  </td>
+                  <td style="padding-bottom: 8px;">
+                    <a href="#" id="copySiteUrl" onclick="return false;" class="btn btn-secondary" style="font-size: 11px; padding: 8px 12px; display: inline-block;">Copy site URL</a>
+                  </td>
+                </tr>
+              </table>
+              <div id="deployMsg" style="font-size: 12px; color: #9ca3af; margin-top: 8px;"></div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Serial Identification Card -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #111827; border: 1px solid #1f2a37; border-radius: 18px; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 20px;">
+              <h2 style="margin: 0 0 12px 0; font-size: 15px; color: #cfe4ff; font-weight: 600;">Identify by Serial</h2>
+              <label style="display: block; margin-bottom: 4px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                Serial number
+              </label>
+              <input type="text" id="Serial number" placeholder="e.g., 12345" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-bottom: 12px;">
+
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-right: 12px;">
+                    <a href="#" onclick="loadBySerial(); return false;" id="btnLoad" class="btn" style="display: inline-block; padding: 12px 18px;">Load Item</a>
+                  </td>
+                  <td style="vertical-align: middle;">
+                    <span id="findMsg" style="font-size: 12px; color: #9ca3af;"></span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Main Form Card -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #111827; border: 1px solid #1f2a37; border-radius: 18px; margin-bottom: 16px;">
+          <tr>
+            <td style="padding: 20px;">
+              <form id="assetForm" data-mode="serial-only" onsubmit="event.preventDefault(); saveBySerial();">
+                <h2 style="margin: 0 0 16px 0; font-size: 15px; color: #cfe4ff; font-weight: 600;">Check‑In Details</h2>
+                <input type="hidden" id="_ItemId">
+
+                <!-- Status -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Status
+                  <select id="Status" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                    <option value="">Select…</option>
+                  </select>
+                </label>
+
+                <!-- Current Location -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Current Location
+                  <select id="Current Location" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                    <option value="">Select…</option>
+                  </select>
+                </label>
+
+                <!-- Paired with -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Paired with
+                  <input type="text" id="Paired with" placeholder="e.g., Micromate S/N + Sensor" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Days Left in Calibration -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Days Left in Calibration
+                  <input type="number" id="Days Left in Calibration" placeholder="e.g., 325" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Calibration Date -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Calibration Date
+                  <input type="date" id="Calibration Date" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Calibration Due date -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Calibration Due date
+                  <input type="date" id="Calibration Due date" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Previous Locations -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Previous Locations
+                  <input type="text" id="Previous Locations" placeholder="e.g., Project XYZ" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Unit Set Up -->
+                <label style="display: block; margin-bottom: 24px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Unit Set Up
+                  <textarea id="Unit Set Up" rows="2" placeholder="Notes on configuration/setup" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 12px; font-size: 14px; box-sizing: border-box; margin-top: 4px; min-height: 60px; font-family: inherit;"></textarea>
+                </label>
+
+                <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #cfe4ff; font-weight: 600;">Attachments</h3>
+
+                <!-- File Upload -->
+                <label style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Upload files
+                  <input type="file" id="fileAttachments" multiple style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Attachments URL -->
+                <label style="display: block; margin-bottom: 20px; font-size: 13px; font-weight: 500; color: #e2e8f0;">
+                  Attachments (URL)
+                  <input type="text" id="Attachments" placeholder="Link to certificate or file" style="width: 100%; padding: 12px 16px; background-color: #0f172a; color: #f9fafb; border: 1px solid #1f2a37; border-radius: 999px; font-size: 14px; box-sizing: border-box; margin-top: 4px;">
+                </label>
+
+                <!-- Submit Button -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right: 12px;">
+                      <button type="submit" id="btnSave" class="btn" style="border: none; cursor: pointer;">Update by Serial</button>
+                    </td>
+                    <td style="vertical-align: middle;">
+                      <span id="saveMsg" style="font-size: 12px; color: #9ca3af;"></span>
+                    </td>
+                  </tr>
+                </table>
+              </form>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 24px; margin-bottom: 24px;">
+          <tr>
+            <td style="text-align: center; font-size: 12px; color: #9ca3af; opacity: 0.7;">
+              © <span id="year"></span> Certerra I&M — Mobile Check‑In
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+  <!--[if mso]>
+  </td>
+  </tr>
+  </table>
+  </center>
+  <![endif]-->
+
+<script type="text/javascript">
+  // ====== CONFIG (hard-baked defaults; will auto-detect at runtime) ======
+  const CFG = {
+    siteUrl: "https://bigapplegroupny.sharepoint.com/sites/Instrumentation", // fallback
+    listTitle: "Asset manager",
+    allItemsUrl: "https://bigapplegroupny.sharepoint.com/sites/Instrumentation/Lists/Asset manager/AllItems.aspx",
+    logoSrc: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAwCAYAAADZ9HK+AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAAWdEVYdENyZWF0aW9uIFRpbWUAMDcvMjkvMTbvhp52AAAFKUlEQVR4nO2cS2wbVRSGv3Ecx3HsOK+mrVS1aqVSqYhKRYgFQkJCYsOCBWLBggUbNixYsGDDhgULFmxYsGHBggULNixYsGDDggVCQkJCQkJCQkKoVKlSS1PVbZo4jp04jj0s7nUynnk4M2Mnruf+Uksze+beO//ce8+559wZQ5IkCQGBQKAQEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAAEBAgIEBAgIEBAgIEBAgIAAAQECAgQECAgQECAgQECAgAABAQICBAQICBAQICBAQICAAH8D/gOvLV3P8gN3NgAAAABJRU5ErkJggg=="
+  };
+
+  // Runtime site detection (prefers page context)
+  const SITE = (window._spPageContextInfo && _spPageContextInfo.webAbsoluteUrl) ? _spPageContextInfo.webAbsoluteUrl : CFG.siteUrl;
+  const API = `${SITE.replace(/\/$/,'')}/_api`;
+  // ================================
+
+  // Field caches
+  let FIELD_MAP = {};      // Title -> InternalName
+  let FIELD_MAP_LC = {};   // lowercased Title -> InternalName
+  let CHOICES = {};        // lowercased Title -> [choices]
+  let FIELDS_RAW = [];     // raw field defs
+
+  // ---------- Boot ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('siteUrlText').textContent = SITE;
+    document.getElementById('allItemsLink').href = CFG.allItemsUrl;
+    document.getElementById('cfgSite').textContent = SITE;
+    document.getElementById('cfgList').textContent = CFG.listTitle;
+
+    // Deployment helper links
+    const siteAssetsUrl = `${SITE}/SiteAssets/Forms/AllItems.aspx`;
+    document.getElementById('openSiteAssets').href = siteAssetsUrl;
+    document.getElementById('openAllItems').href = CFG.allItemsUrl;
+    document.getElementById('copySiteUrl').addEventListener('click',()=>{
+      navigator.clipboard.writeText(SITE).then(()=> setMsg('deployMsg','Copied site URL ✓')).catch(()=> setMsg('deployMsg','Copy failed'));
+    });
+
+    setFormEnabled(false);
+    paintHealth();
+    refreshMeta();
+  });
+
+  // ---------- Hosting context & health ----------
+  function detectHostingContext(){
+    const isFile = location.protocol === 'file:';
+    const isHttps = location.protocol === 'https:';
+    const site = new URL(SITE);
+    const sameOrigin = site.origin.toLowerCase() === location.origin.toLowerCase();
+    const sameHost = site.hostname.toLowerCase() === location.hostname.toLowerCase();
+    return { isFile, isHttps, sameOrigin, sameHost, origin: location.origin, host: location.hostname, siteOrigin: site.origin };
+  }
+
+  function paintHealth(partial){
+    const H = detectHostingContext();
+    const list = document.getElementById('healthList');
+    const rows = [];
+    const add = (ok, label, detail) => {
+      const dot = ok ? 'status-ok' : 'status-err';
+      rows.push(`<div style="margin-bottom: 6px;"><span class="status-dot ${dot}" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background-color: ${ok ? '#10b981' : '#ef4444'};"></span>${label}${detail ? ` — <span style="opacity: 0.8;">${detail}</span>` : ''}</div>`);
+    };
+    add(H.isHttps, 'Served over HTTPS', H.isHttps ? '' : 'SharePoint requires https for cookies');
+    add(!H.isFile, 'Not opened from file://', H.isFile ? 'Upload this HTML to Site Assets or host on the site' : '');
+    add(H.sameOrigin, 'Same origin as configured site', H.sameOrigin ? '' : `Page: ${H.origin} vs Site: ${H.siteOrigin}`);
+    if (partial && partial.api){
+      const apiDot = partial.api.ok ? 'status-ok' : 'status-err';
+      rows.push(`<div style="margin-bottom: 6px;"><span class="status-dot ${apiDot}" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background-color: ${partial.api.ok ? '#10b981' : '#ef4444'};"></span>API ${partial.api.label} — ${partial.api.msg}</div>`);
+    }
+    list.innerHTML = rows.join('');
+    // Disable buttons if likely broken env
+    const broken = H.isFile || !H.isHttps || !H.sameOrigin;
+    document.getElementById('btnLoad').disabled = broken;
+    document.getElementById('btnSave').disabled = broken;
+  }
+
+  async function runHealthCheck(){
+    try{
+      const url = `${API}/web/currentuser`;
+      const res = await fetchWithTimeout(url, { credentials:'include', mode:'cors', headers:{ 'Accept':'application/json;odata=nometadata' } }, 8000);
+      if(res.ok){ paintHealth({ api:{ ok:true, label:'currentuser', msg:'Authenticated' } }); }
+      else { paintHealth({ api:{ ok:false, label:'currentuser', msg:`HTTP ${res.status}` } }); }
+    }catch(e){ const msg = e.name === 'AbortError' ? 'Timeout (possible CORS/off-domain)' : (e.message||'Failed to fetch'); paintHealth({ api:{ ok:false, label:'currentuser', msg } }); }
+  }
+
+  // ---------- SharePoint helpers ----------
+  async function fetchWithTimeout(url, options={}, timeout=12000){
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try{ return await fetch(url, { ...options, signal: controller.signal }); }
+    finally { clearTimeout(id); }
+  }
+
+  async function getFormDigest(){
+    const url = `${API}/contextinfo`;
+    const res = await fetchWithTimeout(url, {
+      method: 'POST', credentials: 'include', mode: 'cors',
+      headers: { 'Accept': 'application/json;odata=verbose', 'Content-Type': 'application/json;odata=verbose;charset=UTF-8' }
+    }, 12000);
+    if(!res.ok) throw await enrichNetError('ContextInfo failed', res);
+    const data = await res.json();
+    return data.d.GetContextWebInformation.FormDigestValue;
+  }
+
+  async function spGet(url){
+    const res = await fetchWithTimeout(url, { credentials: 'include', mode: 'cors', headers: { 'Accept': 'application/json;odata=nometadata' } }, 12000);
+    if(!res.ok) throw await enrichNetError('GET failed', res);
+    return res.json();
+  }
+
+  async function spUpdate(id, body){
+    const digest = await getFormDigest();
+    const url = `${API}/web/lists/getbytitle('${encodeURIComponent(CFG.listTitle)}')/items(${id})`;
+    const res = await fetchWithTimeout(url, {
+      method: 'POST', credentials: 'include', mode: 'cors',
+      headers: { 'Accept': 'application/json;odata=nometadata', 'Content-Type': 'application/json;odata=nometadata', 'IF-MATCH': '*', 'X-HTTP-Method': 'MERGE', 'X-RequestDigest': digest },
+      body: JSON.stringify(body)
+    }, 15000);
+    if(!res.ok) throw await enrichNetError('Update failed', res);
+    return true;
+  }
+
+  async function spAddAttachment(id, file){
+    const digest = await getFormDigest();
+    const fileName = encodeURIComponent(file.name);
+    const url = `${API}/web/lists/getbytitle('${encodeURIComponent(CFG.listTitle)}')/items(${id})/AttachmentFiles/add(FileName='${fileName}')`;
+    const res = await fetchWithTimeout(url, { method: 'POST', credentials: 'include', mode: 'cors', headers: { 'Accept':'application/json;odata=nometadata', 'X-RequestDigest': digest }, body:file }, 30000);
+    if(!res.ok) throw await enrichNetError('Attach failed', res);
+    return res.json();
+  }
+
+  async function enrichNetError(prefix, res){
+    let more = '';
+    try { more = await res.text(); } catch(_){}
+    const hint = netHint(res.status);
+    return new Error(`${prefix}: HTTP ${res.status}${hint ? ' — '+hint:''}${more?` — ${truncate(more, 160)}`:''}`);
+  }
+  function netHint(status){ if(status===0) return 'Network blocked (CORS/offline/HTTPS)'; if(status===401) return 'Unauthorized (not signed in at this origin)'; if(status===403) return 'Forbidden (permissions / CORS policy)'; if(status===404) return 'Not found (check siteUrl/listTitle)'; return ''; }
+  function truncate(s, n){ if(!s) return s; return s.length>n? s.slice(0,n)+'…' : s; }
+
+  // ---------- UI helpers ----------
+  function val(id){ return document.getElementById(id)?.value ?? ''; }
+  function setVal(id, v){ const el = document.getElementById(id); if(el) el.value = v ?? ''; }
+  function setMsg(id, msg){ const el = document.getElementById(id); if(el) el.textContent = msg; }
+  function setFormEnabled(enabled){
+    const form = document.getElementById('assetForm');
+    const controls = form.querySelectorAll('input, select, textarea, button[type="submit"]');
+    controls.forEach(el => {
+      if (el.id === 'Serial number') return;
+      if (enabled) el.removeAttribute('disabled');
+      else el.setAttribute('disabled','disabled');
+    });
+  }
+
+  // ---------- Metadata / choices ----------
+  async function refreshMeta(){
+    try{
+      const fields = await spGet(`${API}/web/lists/getbytitle('${encodeURIComponent(CFG.listTitle)}')/fields?$select=Title,InternalName,TypeAsString,Choices,Required,Hidden,ReadOnlyField`);
+      FIELDS_RAW = fields.value || [];
+      FIELD_MAP = {}; FIELD_MAP_LC = {}; CHOICES = {};
+      FIELDS_RAW.filter(f => !f.Hidden).forEach(f => {
+        const titleTrim = (f.Title || '').trim();
+        FIELD_MAP[titleTrim] = f.InternalName;
+        FIELD_MAP_LC[titleTrim.toLowerCase()] = f.InternalName;
+        if ((f.TypeAsString === 'Choice' || f.TypeAsString === 'MultiChoice') && Array.isArray(f.Choices)){
+          CHOICES[titleTrim.toLowerCase()] = f.Choices;
+        }
+      });
+      populateChoiceSelects();
+      setMsg('findMsg','Field metadata loaded');
+    }catch(e){
+      console.error(e);
+      setMsg('findMsg', toFriendlyNetErr(e));
+      paintHealth({ api:{ ok:false, label:'fields', msg: toFriendlyNetErr(e) } });
+    }
+  }
+
+  function populateChoiceSelects(){
+    bindChoicesToSelect('Status');
+    bindChoicesToSelect('Current Location');
+    ensureDefaultSelect('Status', ['Available/Ready for Deployment','Out for Calibration','Damaged','Quarantine/LOTO','Needs Repair']);
+    ensureDefaultSelect('Current Location', ['Office','Ready Zone','LOTO','Calibration Queue']);
+  }
+
+  function bindChoicesToSelect(label){
+    const el = document.getElementById(label);
+    if (!el || el.tagName !== 'SELECT') return;
+    const opts = CHOICES[label.toLowerCase()];
+    if (Array.isArray(opts)){
+      const selected = el.value;
+      el.innerHTML = '<option value="">Select…</option>' + opts.map(c => `<option>${c}</option>`).join('');
+      if (selected) el.value = selected;
+    }
+  }
+
+  function ensureDefaultSelect(id, options){
+    const el = document.getElementById(id);
+    if (el && el.tagName === 'SELECT' && el.options.length === 0){
+      el.innerHTML = '<option value="">Select…</option>' + options.map(o => `<option>${o}</option>`).join('');
+    }
+  }
+
+  // ---------- Serial lookup / hydration ----------
+  function resolveSerialInternalName(){
+    return FIELD_MAP['Serial number'] || FIELD_MAP_LC['serial number'] || (FIELDS_RAW.find(f => (f.Title||'').toLowerCase().includes('serial')) || {}).InternalName || 'Serial_x0020_number';
+  }
+
+  async function getItemIdBySerial(serial){
+    if (!serial) return null;
+    if (!Object.keys(FIELD_MAP).length) await refreshMeta();
+    const snInternal = resolveSerialInternalName();
+    const safe = String(serial).trim().replaceAll("'","''");
+    const url = `${API}/web/lists/getbytitle('${encodeURIComponent(CFG.listTitle)}')/items?$select=Id,${snInternal}&$top=1&$filter=${snInternal} eq '${safe}'`;
+    const data = await spGet(url);
+    return data.value?.[0]?.Id ?? null;
+  }
+
+  async function loadBySerial(){
+    try{
+      setMsg('findMsg','Loading…');
+      setFormEnabled(false);
+      const serial = val('Serial number');
+      const id = await getItemIdBySerial(serial);
+      if (!id){
+        setMsg('findMsg','No item found for that serial.');
+        setVal('_ItemId','');
+        return;
+      }
+      const item = await spGet(`${API}/web/lists/getbytitle('${encodeURIComponent(CFG.listTitle)}')/items(${id})`);
+      setVal('_ItemId', String(id));
+      hydrateFormFromItem(item);
+      setFormEnabled(true);
+      setMsg('findMsg',`Loaded item #${id} ✓`);
+    }catch(e){
+      console.error(e);
+      setMsg('findMsg', toFriendlyNetErr(e));
+      paintHealth({ api:{ ok:false, label:'load', msg: toFriendlyNetErr(e) } });
+    }
+  }
+
+  function hydrateFormFromItem(item){
+    const inv = (title) => item[FIELD_MAP[title] || FIELD_MAP_LC[title?.toLowerCase?.()] || title];
+    setVal('Status', inv('Status'));
+    setVal('Current Location', inv('Current Location'));
+    setVal('Paired with', inv('Paired with'));
+    setVal('Days Left in Calibration', inv('Days Left in Calibration'));
+    setVal('Unit Set Up', inv('Unit Set Up'));
+    setVal('Calibration Date', (inv('Calibration Date')||'').slice(0,10));
+    setVal('Calibration Due date', (inv('Calibration Due date')||'').slice(0,10));
+    setVal('Previous Locations', inv('Previous Locations'));
+    setVal('Attachments', inv('Attachments'));
+  }
+
+  // ---------- Save ----------
+  async function saveBySerial(){
+    try{
+      setMsg('saveMsg','Updating…');
+      const currentId = document.getElementById('_ItemId').value;
+      if (!currentId){
+        setMsg('saveMsg','No item loaded — update refused.');
+        return;
+      }
+      const body = buildBodyFromForm();
+      await spUpdate(currentId, body);
+      const files = document.getElementById('fileAttachments').files;
+      if (files && files.length){
+        for (const f of files){
+          await spAddAttachment(currentId, f);
+        }
+      }
+      setMsg('saveMsg',`Updated item #${currentId} ✓`);
+    }catch(e){
+      console.error(e);
+      setMsg('saveMsg', toFriendlyNetErr(e));
+      paintHealth({ api:{ ok:false, label:'save', msg: toFriendlyNetErr(e) } });
+    }
+  }
+
+  function buildBodyFromForm(){
+    const map = (title, value) => ({ [FIELD_MAP[title] || FIELD_MAP_LC[title?.toLowerCase?.()] || title]: value });
+    return {
+      ...map('Status', val('Status')),
+      ...map('Current Location', val('Current Location')),
+      ...map('Paired with', val('Paired with')),
+      ...map('Days Left in Calibration', val('Days Left in Calibration') ? Number(val('Days Left in Calibration')) : null),
+      ...map('Unit Set Up', val('Unit Set Up')),
+      ...map('Calibration Date', val('Calibration Date') || null),
+      ...map('Calibration Due date', val('Calibration Due date') || null),
+      ...map('Previous Locations', val('Previous Locations')),
+      ...map('Attachments', val('Attachments'))
+    };
+  }
+
+  function toFriendlyNetErr(e){
+    const msg = (e && e.message) ? e.message : String(e||'');
+    if (/Failed to fetch/i.test(msg)) return 'Failed to fetch — host this file on the SAME SharePoint site and open while signed in.';
+    if (/NetworkError|TypeError: Network/i.test(msg)) return 'Network error — check connectivity and HTTPS.';
+    return msg;
+  }
+</script>
+</body>
+</html>

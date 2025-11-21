@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to Base64 Converter - Email Compatible</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f8f9ff;
+      margin-bottom: 30px;
+    }
+
+    .upload-area:hover {
+      background: #f0f2ff;
+      border-color: #764ba2;
+    }
+
+    .upload-area.drag-over {
+      background: #e8ebff;
+      border-color: #764ba2;
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .upload-text {
+      color: #667eea;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .upload-hint {
+      color: #999;
+      font-size: 13px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .preview-section {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .preview-section.active {
+      display: block;
+    }
+
+    .preview-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .preview-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .image-preview {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .image-preview img {
+      max-width: 100%;
+      height: auto;
+      max-height: 300px;
+      border-radius: 4px;
+    }
+
+    .image-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .info-item {
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .info-label {
+      color: #666;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .code-box {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-x: auto;
+      position: relative;
+      margin-top: 15px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: #764ba2;
+      transform: translateY(-1px);
+    }
+
+    .copy-btn:active {
+      transform: translateY(0);
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .btn:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .alert {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      border-color: #ffeaa7;
+      color: #856404;
+    }
+
+    .size-warning {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🖼️ Image to Base64 Converter</h1>
+    <p class="subtitle">Convert images to base64 for email and Word document compatibility</p>
+
+    <div class="alert">
+      <strong>💡 Pro Tip:</strong> Base64 encoded images work perfectly in Outlook, Word, and all email clients without external hosting!
+    </div>
+
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">📤</div>
+      <div class="upload-text">Click to upload or drag & drop your image</div>
+      <div class="upload-hint">Supports PNG, JPG, GIF, SVG • Recommended max size: 500KB</div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*">
+
+    <!-- Preview Section -->
+    <div class="preview-section" id="previewSection">
+      <!-- Image Preview -->
+      <div class="preview-box">
+        <div class="preview-title">📸 Image Preview</div>
+        <div class="image-preview">
+          <img id="imagePreview" alt="Preview">
+        </div>
+        <div class="image-info">
+          <div class="info-item">
+            <div class="info-label">File Name</div>
+            <div class="info-value" id="fileName">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Type</div>
+            <div class="info-value" id="fileType">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Original Size</div>
+            <div class="info-value" id="originalSize">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Base64 Size</div>
+            <div class="info-value" id="base64Size">-</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Dimensions</div>
+            <div class="info-value" id="dimensions">-</div>
+          </div>
+        </div>
+        <div id="sizeWarning" class="size-warning" style="display: none;">
+          ⚠️ Large file detected! Consider optimizing your image. Files over 1MB may cause email delivery issues.
+        </div>
+      </div>
+
+      <!-- Base64 Output -->
+      <div class="preview-box">
+        <div class="preview-title">📋 Base64 Code (Complete Data URI)</div>
+        <div class="code-box" id="base64Output">
+          <button class="copy-btn" onclick="copyBase64()">Copy</button>
+          <div id="base64Code"></div>
+        </div>
+      </div>
+
+      <!-- HTML Usage Example -->
+      <div class="preview-box">
+        <div class="preview-title">🔧 HTML Usage Example</div>
+        <div class="code-box" id="htmlExample">
+          <button class="copy-btn" onclick="copyHTML()">Copy</button>
+          <div id="htmlCode"></div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="button-group">
+        <button class="btn" onclick="downloadBase64()">💾 Download as .txt</button>
+        <button class="btn" onclick="copyForOutlook()">📧 Copy for Outlook</button>
+        <button class="btn btn-secondary" onclick="reset()">🔄 Upload Another</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentBase64 = '';
+    let currentFileName = '';
+    let currentFileType = '';
+
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewSection = document.getElementById('previewSection');
+
+    // Click to upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file (PNG, JPG, GIF, SVG)');
+        return;
+      }
+
+      currentFileName = file.name;
+      currentFileType = file.type;
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        currentBase64 = e.target.result;
+        displayResults(file, currentBase64);
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function displayResults(file, base64) {
+      // Show preview section
+      previewSection.classList.add('active');
+      uploadArea.style.display = 'none';
+
+      // Display image preview
+      const img = document.getElementById('imagePreview');
+      img.src = base64;
+
+      // Get image dimensions
+      img.onload = () => {
+        document.getElementById('dimensions').textContent = `${img.naturalWidth} × ${img.naturalHeight}px`;
+      };
+
+      // Display file info
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileType').textContent = file.type;
+      document.getElementById('originalSize').textContent = formatBytes(file.size);
+      document.getElementById('base64Size').textContent = formatBytes(base64.length);
+
+      // Show size warning if needed
+      if (base64.length > 1000000) {
+        document.getElementById('sizeWarning').style.display = 'block';
+      } else {
+        document.getElementById('sizeWarning').style.display = 'none';
+      }
+
+      // Display base64 code
+      document.getElementById('base64Code').textContent = base64;
+
+      // Display HTML example
+      const htmlCode = `<img src="${base64}"
+     alt="${file.name.replace(/\.[^/.]+$/, '')}"
+     width="auto"
+     height="auto"
+     style="max-width: 100%; height: auto;">`;
+      document.getElementById('htmlCode').textContent = htmlCode;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function copyBase64() {
+      copyToClipboard(currentBase64, 'copy-btn');
+    }
+
+    function copyHTML() {
+      const htmlCode = document.getElementById('htmlCode').textContent;
+      copyToClipboard(htmlCode, 'copy-btn');
+    }
+
+    function copyForOutlook() {
+      const outlookCode = `<img src="${currentBase64}" alt="${currentFileName}" style="max-width: 600px; height: auto; display: block;">`;
+      copyToClipboard(outlookCode);
+      alert('✅ Outlook-optimized HTML copied! Paste it into your email HTML editor.');
+    }
+
+    function copyToClipboard(text, buttonClass) {
+      navigator.clipboard.writeText(text).then(() => {
+        const buttons = document.querySelectorAll('.copy-btn');
+        buttons.forEach(btn => {
+          btn.textContent = '✓ Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 2000);
+        });
+      }).catch(err => {
+        alert('Failed to copy. Please select and copy manually.');
+        console.error('Copy failed:', err);
+      });
+    }
+
+    function downloadBase64() {
+      const blob = new Blob([currentBase64], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentFileName.replace(/\.[^/.]+$/, '')}-base64.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function reset() {
+      previewSection.classList.remove('active');
+      uploadArea.style.display = 'block';
+      fileInput.value = '';
+      currentBase64 = '';
+      currentFileName = '';
+      currentFileType = '';
+    }
+  </script>
+</body>
+</html>
