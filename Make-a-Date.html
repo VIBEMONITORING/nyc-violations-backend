@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Your Personal Care Scheduler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5e6d3 0%, #d4c5b0 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .app-container {
+            max-width: 500px;
+            width: 100%;
+            min-height: 100vh;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #a98467 0%, #8b6f47 100%);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .progress-bar {
+            background: #e8d7c3;
+            height: 4px;
+        }
+
+        .progress-fill {
+            background: #a98467;
+            height: 100%;
+            width: 25%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-title {
+            font-size: 22px;
+            color: #5d4e37;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .screen-subtitle {
+            font-size: 14px;
+            color: #8b7355;
+            margin-bottom: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .service-card {
+            background: #faf8f5;
+            border: 2px solid #e8d7c3;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .service-card:active {
+            transform: scale(0.98);
+        }
+
+        .service-card.selected {
+            background: linear-gradient(135deg, #f5ede3 0%, #ede4d8 100%);
+            border-color: #a98467;
+            border-width: 3px;
+        }
+
+        .service-icon {
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-title {
+            font-size: 17px;
+            color: #5d4e37;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .service-desc {
+            font-size: 13px;
+            color: #8b7355;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 15px;
+            color: #5d4e37;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-select, .form-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e8d7c3;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            background: #faf8f5;
+            color: #5d4e37;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            padding: 14px;
+            border: 2px solid #e8d7c3;
+            border-radius: 10px;
+            background: #faf8f5;
+            color: #5d4e37;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        .option-btn.selected {
+            background: #a98467;
+            color: #fff;
+            border-color: #a98467;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 80px;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a98467 0%, #8b6f47 100%);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-size: 17px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            background: #d4c5b0;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #a98467;
+            border: 2px solid #a98467;
+            padding: 12px;
+            border-radius: 30px;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
+        }
+
+        .btn-google {
+            background: linear-gradient(135deg, #4285F4 0%, #3367D6 100%);
+        }
+
+        .btn-apple {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #fdfbf7 0%, #f5ede3 100%);
+            border: 3px solid #a98467;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-title {
+            font-size: 22px;
+            color: #a98467;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .summary-item {
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: #8b7355;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary-value {
+            font-size: 17px;
+            color: #5d4e37;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .pref-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #faf8f5;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #a98467;
+        }
+
+        .pref-item span:first-child {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #8b7355;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e8d7c3;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        @media (max-width: 400px) {
+            .service-card { padding: 12px; }
+            .service-icon { font-size: 35px; }
+            .service-title { font-size: 16px; }
+            .option-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>PERSONAL CARE SCHEDULER</h1>
+            <p>Book Your Special Time</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="content">
+            <!-- Screen 1: Service Selection -->
+            <div class="screen active" id="screen1">
+                <h2 class="screen-title">Choose Your Service</h2>
+                <p class="screen-subtitle">What would you like to schedule?</p>
+
+                <div class="service-card" onclick="selectService('bubble-bath', '🛁', 'Bubble Bath Experience')">
+                    <div class="service-icon">🛁</div>
+                    <div class="service-info">
+                        <div class="service-title">Bubble Bath Experience</div>
+                        <div class="service-desc">Relaxing bubble bath with candles and music</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('foot-massage', '🦶', 'Foot Massage')">
+                    <div class="service-icon">🦶</div>
+                    <div class="service-info">
+                        <div class="service-title">Foot Massage</div>
+                        <div class="service-desc">Soothing foot massage to help you unwind</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('back-massage', '💆‍♀️', 'Back Massage')">
+                    <div class="service-icon">💆‍♀️</div>
+                    <div class="service-info">
+                        <div class="service-title">Back Massage</div>
+                        <div class="service-desc">Therapeutic back massage to release tension</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('full-body', '💆', 'Full Body Massage')">
+                    <div class="service-icon">💆</div>
+                    <div class="service-info">
+                        <div class="service-title">Full Body Massage</div>
+                        <div class="service-desc">Complete relaxation session</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('pedicure', '💅', 'At-Home Pedicure')">
+                    <div class="service-icon">💅</div>
+                    <div class="service-info">
+                        <div class="service-title">At-Home Pedicure</div>
+                        <div class="service-desc">Pamper your feet with complete treatment</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('date-night', '❤️', 'Date Night')">
+                    <div class="service-icon">❤️</div>
+                    <div class="service-info">
+                        <div class="service-title">Date Night</div>
+                        <div class="service-desc">Special evening out or romantic dinner</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('game-night', '🎮', 'Game Night')">
+                    <div class="service-icon">🎮</div>
+                    <div class="service-info">
+                        <div class="service-title">Game Night</div>
+                        <div class="service-desc">Fun evening playing games together</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('movie-night', '🎬', 'Movie Night')">
+                    <div class="service-icon">🎬</div>
+                    <div class="service-info">
+                        <div class="service-title">Movie Night</div>
+                        <div class="service-desc">Cozy movie night with snacks</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('cooking', '👨‍🍳', 'Cooking Together')">
+                    <div class="service-icon">👨‍🍳</div>
+                    <div class="service-info">
+                        <div class="service-title">Cooking Together</div>
+                        <div class="service-desc">Prepare a delicious meal together</div>
+                    </div>
+                </div>
+
+                <div class="service-card" onclick="selectService('breakfast', '🥞', 'Breakfast in Bed')">
+                    <div class="service-icon">🥞</div>
+                    <div class="service-info">
+                        <div class="service-title">Breakfast in Bed</div>
+                        <div class="service-desc">Wake up to freshly prepared breakfast</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Customization -->
+            <div class="screen" id="screen2">
+                <h2 class="screen-title">Customize Your Experience</h2>
+                <p class="screen-subtitle">Personalize your preferences</p>
+                <div id="customOptions"></div>
+                <button class="btn-primary" onclick="goToScreen(3)">Continue to Date & Time</button>
+                <button class="btn-secondary" onclick="goToScreen(1)">Go Back</button>
+            </div>
+
+            <!-- Screen 3: Date & Time -->
+            <div class="screen" id="screen3">
+                <h2 class="screen-title">Select Date & Time</h2>
+                <p class="screen-subtitle">When would you like to schedule this?</p>
+
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="dateInput" onchange="checkDateTime()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <div class="time-inputs">
+                        <select class="form-select" id="hourInput" onchange="checkDateTime()">
+                            <option value="">Hour</option>
+                        </select>
+                        <select class="form-select" id="minInput" onchange="checkDateTime()">
+                            <option value="">Min</option>
+                        </select>
+                        <select class="form-select" id="periodInput" onchange="checkDateTime()">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="reviewBtn" disabled onclick="goToScreen(4)">Review Appointment</button>
+                <button class="btn-secondary" onclick="goToScreen(2)">Go Back</button>
+            </div>
+
+            <!-- Screen 4: Confirmation -->
+            <div class="screen" id="screen4">
+                <h2 class="screen-title">Confirm Your Appointment</h2>
+                <p class="screen-subtitle">Review your selections</p>
+
+                <div class="summary-box">
+                    <div class="summary-title" id="summaryService"></div>
+                    <div class="summary-item">
+                        <div class="summary-label">Date & Time</div>
+                        <div class="summary-value" id="summaryDateTime"></div>
+                    </div>
+                    <div id="summaryPrefs"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary btn-whatsapp" onclick="sendWhatsApp()">📱 Send via WhatsApp</button>
+                    
+                    <div class="divider">Add to Calendar</div>
+                    
+                    <button class="btn-primary btn-apple" onclick="addToiOSCalendar()">📅 Add to iPhone Calendar</button>
+                    <button class="btn-primary btn-google" onclick="addToGoogleCalendar()">📅 Add to Google Calendar</button>
+                </div>
+                
+                <button class="btn-secondary" onclick="goToScreen(3)">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            service: '',
+            serviceIcon: '',
+            serviceTitle: '',
+            prefs: {},
+            date: '',
+            time: '',
+            dateObj: null
+        };
+
+        const templates = {
+            'bubble-bath': {
+                'Temperature': ['Warm', 'Hot', 'Extra Hot'],
+                'Scent': ['Lavender', 'Rose', 'Eucalyptus', 'Unscented'],
+                'Music': ['Soft Piano', 'Nature Sounds', 'Your Playlist', 'Silence'],
+                'Lighting': ['Candles', 'Dimmed Lights', 'Soft Glow']
+            },
+            'foot-massage': {
+                'Pressure': ['Light & Gentle', 'Medium', 'Firm & Deep'],
+                'Oil': ['Peppermint', 'Lavender', 'Unscented', 'No Oil'],
+                'Duration': ['15 minutes', '30 minutes', '45 minutes']
+            },
+            'back-massage': {
+                'Pressure': ['Light & Gentle', 'Medium', 'Firm & Deep'],
+                'Oil': ['Lavender', 'Eucalyptus', 'Unscented', 'No Oil'],
+                'Focus': ['Upper Back', 'Lower Back', 'Shoulders', 'Full Back'],
+                'Duration': ['20 minutes', '30 minutes', '45 minutes']
+            },
+            'full-body': {
+                'Pressure': ['Light & Gentle', 'Medium', 'Firm & Deep'],
+                'Oil': ['Lavender', 'Eucalyptus', 'Rose', 'Unscented'],
+                'Ambiance': ['Candles', 'Soft Music', 'Nature Sounds', 'Quiet'],
+                'Duration': ['45 minutes', '60 minutes', '90 minutes']
+            },
+            'pedicure': {
+                'Polish': ['Yes - Your Color Choice', 'Yes - Neutral', 'No Polish'],
+                'Soak': ['Warm with Epsom Salt', 'Warm with Essential Oils', 'Simple Warm Water'],
+                'Massage After': ['Yes Please', 'No Thanks']
+            },
+            'date-night': {
+                'Type': ['Dinner Out', 'Dinner at Home', 'Activity & Dinner', 'Surprise Me'],
+                'Cuisine': ['Italian', 'Mexican', 'Asian', 'American', 'Your Favorite'],
+                'Dress': ['Casual', 'Dressy', 'Whatever You Like']
+            },
+            'game-night': {
+                'Games': ['Board Games', 'Video Games', 'Card Games', 'You Choose'],
+                'Snacks': ['Sweet', 'Savory', 'Both', 'Your Favorites'],
+                'Duration': ['1-2 hours', '2-3 hours', 'As long as we want']
+            },
+            'movie-night': {
+                'Genre': ['Comedy', 'Romance', 'Action', 'Drama', 'Your Choice'],
+                'Snacks': ['Popcorn', 'Candy', 'Healthy', 'Your Favorites'],
+                'Setting': ['Couch with Blankets', 'Bed Setup', 'Wherever is Comfy']
+            },
+            'cooking': {
+                'Meal': ['Breakfast', 'Lunch', 'Dinner', 'Dessert'],
+                'Cuisine': ['Italian', 'Mexican', 'Asian', 'Breakfast Foods', 'Your Choice'],
+                'Complexity': ['Simple & Fun', 'Try Something New', 'Whatever You Want']
+            },
+            'breakfast': {
+                'Main': ['Pancakes', 'French Toast', 'Eggs & Bacon', 'Your Favorite'],
+                'Beverage': ['Coffee', 'Tea', 'Juice', 'All of the Above'],
+                'Extra': ['Fresh Fruit', 'Pastry', 'Surprise Me']
+            }
+        };
+
+        function selectService(id, icon, title) {
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            event.target.closest('.service-card').classList.add('selected');
+            
+            data.service = id;
+            data.serviceIcon = icon;
+            data.serviceTitle = title;
+            data.prefs = {};
+            
+            loadCustomizations();
+            setTimeout(() => goToScreen(2), 300);
+        }
+
+        function loadCustomizations() {
+            const container = document.getElementById('customOptions');
+            container.innerHTML = '';
+            
+            const template = templates[data.service];
+            if (!template) return;
+
+            for (const [label, options] of Object.entries(template)) {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                
+                const lbl = document.createElement('label');
+                lbl.className = 'form-label';
+                lbl.textContent = label;
+                group.appendChild(lbl);
+
+                if (options.length <= 4) {
+                    const grid = document.createElement('div');
+                    grid.className = 'option-grid';
+                    
+                    options.forEach(opt => {
+                        const btn = document.createElement('div');
+                        btn.className = 'option-btn';
+                        btn.textContent = opt;
+                        btn.onclick = function() {
+                            grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                            this.classList.add('selected');
+                            data.prefs[label] = opt;
+                        };
+                        grid.appendChild(btn);
+                    });
+                    
+                    group.appendChild(grid);
+                } else {
+                    const select = document.createElement('select');
+                    select.className = 'form-select';
+                    
+                    const def = document.createElement('option');
+                    def.value = '';
+                    def.textContent = 'Choose...';
+                    select.appendChild(def);
+                    
+                    options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        select.appendChild(option);
+                    });
+                    
+                    select.onchange = function() {
+                        data.prefs[label] = this.value;
+                    };
+                    
+                    group.appendChild(select);
+                }
+                
+                container.appendChild(group);
+            }
+        }
+
+        function goToScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            window.scrollTo(0, 0);
+            
+            const progress = ((num - 1) / 3) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            
+            if (num === 4) loadSummary();
+        }
+
+        // Initialize time selects
+        const hourSel = document.getElementById('hourInput');
+        const minSel = document.getElementById('minInput');
+        
+        for (let i = 1; i <= 12; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = i;
+            hourSel.appendChild(opt);
+        }
+        
+        for (let i = 0; i < 60; i += 15) {
+            const opt = document.createElement('option');
+            const val = i.toString().padStart(2, '0');
+            opt.value = val;
+            opt.textContent = val;
+            minSel.appendChild(opt);
+        }
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateInput').min = today;
+
+        function checkDateTime() {
+            const date = document.getElementById('dateInput').value;
+            const hour = document.getElementById('hourInput').value;
+            const min = document.getElementById('minInput').value;
+            const period = document.getElementById('periodInput').value;
+            
+            if (date && hour && min) {
+                data.date = date;
+                data.time = hour + ':' + min + ' ' + period;
+                
+                // Create full datetime object
+                let hour24 = parseInt(hour);
+                if (period === 'PM' && hour24 !== 12) hour24 += 12;
+                if (period === 'AM' && hour24 === 12) hour24 = 0;
+                
+                data.dateObj = new Date(date + 'T' + hour24.toString().padStart(2, '0') + ':' + min + ':00');
+                
+                document.getElementById('reviewBtn').disabled = false;
+            } else {
+                document.getElementById('reviewBtn').disabled = true;
+            }
+        }
+
+        function loadSummary() {
+            document.getElementById('summaryService').textContent = data.serviceIcon + ' ' + data.serviceTitle;
+            
+            const dateObj = new Date(data.date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            document.getElementById('summaryDateTime').textContent = dateStr + ' at ' + data.time;
+            
+            const prefsDiv = document.getElementById('summaryPrefs');
+            prefsDiv.innerHTML = '';
+            
+            if (Object.keys(data.prefs).length > 0) {
+                const item = document.createElement('div');
+                item.className = 'summary-item';
+                item.innerHTML = '<div class="summary-label">Your Preferences</div>';
+                
+                for (const [key, val] of Object.entries(data.prefs)) {
+                    const pref = document.createElement('div');
+                    pref.className = 'pref-item';
+                    pref.innerHTML = '<span>✓</span><span>' + val + '</span>';
+                    item.appendChild(pref);
+                }
+                
+                prefsDiv.appendChild(item);
+            }
+        }
+
+        function sendWhatsApp() {
+            let msg = '✨ ' + data.serviceIcon + ' ' + data.serviceTitle + ' ✨\n\n';
+            
+            const dateObj = new Date(data.date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            msg += '📅 ' + dateStr + '\n';
+            msg += '🕐 ' + data.time + '\n\n';
+            
+            if (Object.keys(data.prefs).length > 0) {
+                msg += 'My Preferences:\n';
+                for (const val of Object.values(data.prefs)) {
+                    msg += '✓ ' + val + '\n';
+                }
+            }
+            
+            msg += '\nI\'m looking forward to it! 💕';
+            
+            const encoded = encodeURIComponent(msg);
+            window.location.href = 'https://wa.me/19179439882?text=' + encoded;
+        }
+
+        function addToiOSCalendar() {
+            // Create ICS file for iOS Calendar
+            const startDate = data.dateObj;
+            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
+            
+            let description = data.serviceTitle;
+            if (Object.keys(data.prefs).length > 0) {
+                description += '\\n\\nPreferences:\\n';
+                for (const val of Object.values(data.prefs)) {
+                    description += '- ' + val + '\\n';
+                }
+            }
+            
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Personal Care Scheduler//EN',
+                'BEGIN:VEVENT',
+                'UID:' + Date.now() + '@personalcare',
+                'DTSTAMP:' + formatICSDate(new Date()),
+                'DTSTART:' + formatICSDate(startDate),
+                'DTEND:' + formatICSDate(endDate),
+                'SUMMARY:' + data.serviceIcon + ' ' + data.serviceTitle,
+                'DESCRIPTION:' + description,
+                'STATUS:CONFIRMED',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+            
+            // Create blob and download
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'appointment.ics';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function addToGoogleCalendar() {
+            const startDate = data.dateObj;
+            const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
+            
+            let description = '';
+            if (Object.keys(data.prefs).length > 0) {
+                description += 'Preferences:\n';
+                for (const val of Object.values(data.prefs)) {
+                    description += '- ' + val + '\n';
+                }
+            }
+            
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: data.serviceIcon + ' ' + data.serviceTitle,
+                dates: formatGoogleDate(startDate) + '/' + formatGoogleDate(endDate),
+                details: description
+            });
+            
+            window.open('https://calendar.google.com/calendar/render?' + params.toString(), '_blank');
+        }
+
+        function formatICSDate(date) {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        }
+
+        function formatGoogleDate(date) {
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        }
+    </script>
+</body>
+</html>
