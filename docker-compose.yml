@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: watch_pricing_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-watchuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-watchpass}
+      POSTGRES_DB: ${POSTGRES_DB:-watch_pricing}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./python_backend/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - watch_network
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    container_name: watch_pricing_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - watch_network
+
+  # FastAPI Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: watch_pricing_api
+    environment:
+      DATABASE_URL: postgresql://watchuser:watchpass@postgres:5432/watch_pricing
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./python_backend:/app/python_backend
+    networks:
+      - watch_network
+    command: uvicorn python_backend.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Streamlit Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: watch_pricing_dashboard
+    environment:
+      DATABASE_URL: postgresql://watchuser:watchpass@postgres:5432/watch_pricing
+    ports:
+      - "8501:8501"
+    depends_on:
+      - postgres
+      - api
+    volumes:
+      - ./python_backend:/app/python_backend
+    networks:
+      - watch_network
+    command: streamlit run python_backend/dashboards/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: watch_pricing_celery_worker
+    environment:
+      DATABASE_URL: postgresql://watchuser:watchpass@postgres:5432/watch_pricing
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./python_backend:/app/python_backend
+    networks:
+      - watch_network
+    command: celery -A python_backend.utils.scheduler worker --loglevel=info
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: watch_pricing_celery_beat
+    environment:
+      DATABASE_URL: postgresql://watchuser:watchpass@postgres:5432/watch_pricing
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./python_backend:/app/python_backend
+    networks:
+      - watch_network
+    command: celery -A python_backend.utils.scheduler beat --loglevel=info
+
+volumes:
+  postgres_data:
+
+networks:
+  watch_network:
+    driver: bridge

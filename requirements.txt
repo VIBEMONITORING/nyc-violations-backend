@@ -1,0 +1,57 @@
+# Web Scraping
+playwright==1.40.0
+selenium==4.16.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+requests==2.31.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+pydantic==2.5.3
+python-dateutil==2.8.2
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+alembic==1.13.1
+
+# Task Queue & Scheduling
+celery==5.3.4
+redis==5.0.1
+apscheduler==3.10.4
+
+# Messaging & Alerts
+slack-sdk==3.26.1
+sendgrid==6.11.0
+twilio==8.11.1
+
+# Dashboard
+streamlit==1.29.0
+plotly==5.18.0
+altair==5.2.0
+
+# API & Web
+fastapi==0.108.0
+uvicorn==0.25.0
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Utilities
+python-dotenv==1.0.0
+loguru==0.7.2
+tenacity==8.2.3
+httpx==0.25.2
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+faker==21.0.0
+
+# Type Checking & Linting
+mypy==1.7.1
+black==23.12.1
+flake8==6.1.0
+isort==5.13.2
