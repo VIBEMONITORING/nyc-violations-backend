@@ -1,0 +1,8 @@
+# Synexis robots.txt
+# https://synexis.io
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://synexis.io/sitemap.xml

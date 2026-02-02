@@ -1,0 +1,11 @@
+# Synexis Cloudflare Pages Redirects
+# https://developers.cloudflare.com/pages/platform/redirects/
+
+# Clean URL redirects (optional - Cloudflare Pages handles .html extension automatically)
+/capabilities    /capabilities.html    200
+/approach        /approach.html        200
+/work            /work.html            200
+/about           /about.html           200
+
+# Insights index
+/insights        /insights/index.html  200
