@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integration Patterns for Legacy Systems — SYNEXIS</title>
+  <meta name="description" content="Common patterns and anti-patterns when connecting modern applications to legacy infrastructure.">
+  <link rel="canonical" href="https://synexis.io/insights/integration-patterns.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://synexis.io/insights/integration-patterns.html">
+  <meta property="og:title" content="Integration Patterns for Legacy Systems — SYNEXIS">
+  <meta property="og:description" content="Common patterns and anti-patterns when connecting modern applications to legacy infrastructure.">
+  <meta property="og:site_name" content="Synexis">
+  <meta property="article:published_time" content="2023-12-08">
+  <meta property="article:author" content="Edward Perez">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Integration Patterns for Legacy Systems — SYNEXIS">
+  <meta name="twitter:description" content="Common patterns and anti-patterns when connecting modern applications to legacy infrastructure.">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Integration Patterns for Legacy Systems",
+    "description": "Common patterns and anti-patterns when connecting modern applications to legacy infrastructure.",
+    "datePublished": "2023-12-08",
+    "author": {
+      "@type": "Person",
+      "name": "Edward Perez"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Synexis"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://synexis.io/insights/integration-patterns.html"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a href="/" class="wordmark" aria-label="Synexis Home">SYNEXIS</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" onclick="this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.nextElementSibling.classList.contains('open'))">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav" role="navigation" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/capabilities.html">Capabilities</a>
+        <a href="/approach.html">Approach</a>
+        <a href="/work.html">Work</a>
+        <a href="/about.html">About</a>
+        <a href="/insights/" aria-current="page">Insights</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <article>
+      <header class="article-header">
+        <div class="container">
+          <p class="article-date">December 2023</p>
+          <h1>Integration Patterns for Legacy Systems</h1>
+          <p class="lead">Common patterns and anti-patterns when connecting modern applications to legacy infrastructure.</p>
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="container">
+          <div class="article-content">
+            <p>Most organizations operate some systems that would, ideally, be replaced—but cannot be, for reasons of cost, risk, or organizational capacity. These legacy systems often contain critical data and business logic accumulated over decades. Modern integration efforts must work with legacy infrastructure rather than around it.</p>
+
+            <p>This article describes patterns we have found effective when integrating modern applications with legacy systems, and anti-patterns that consistently cause problems.</p>
+
+            <h2>Effective Patterns</h2>
+
+            <h3>Facade Layer</h3>
+
+            <p>The most reliable legacy integration pattern involves building a facade layer that presents a clean interface to modern systems while handling the complexity of legacy communication internally.</p>
+
+            <p>The facade accepts requests in a standard format, translates them to whatever protocol the legacy system requires, executes the operation, and translates responses back to the standard format. All legacy-specific logic is contained within the facade.</p>
+
+            <p>Benefits: Modern systems never interact directly with legacy protocols. Legacy complexity is isolated. The facade can be extended to handle multiple legacy systems with a single interface.</p>
+
+            <p>Costs: Additional infrastructure to build and maintain. Latency added by translation layer. Facade becomes a critical dependency.</p>
+
+            <h3>Change Data Capture</h3>
+
+            <p>When real-time integration is required but legacy systems lack adequate APIs, change data capture (CDC) provides an alternative. CDC monitors the legacy system's data store directly, capturing changes as they occur and publishing them to downstream systems.</p>
+
+            <p>This pattern requires access to the legacy database and understanding of its schema—but does not require changes to the legacy application itself.</p>
+
+            <p>Benefits: No modifications to legacy systems. Near real-time data availability. Complete change history captured.</p>
+
+            <p>Costs: Tight coupling to legacy database schema. Changes to legacy schema require CDC updates. Potential performance impact on legacy database.</p>
+
+            <h3>Batch Extract and Sync</h3>
+
+            <p>For use cases that do not require real-time data, batch extraction remains a reliable pattern. Scheduled processes extract data from legacy systems, transform it to required formats, and load it to modern data stores.</p>
+
+            <p>This pattern is well-understood and can be implemented with minimal risk to legacy systems.</p>
+
+            <p>Benefits: Simple to implement. Minimal impact on legacy systems. Well-established tooling available.</p>
+
+            <p>Costs: Data is not real-time. Batch failures can cause significant data gaps. Reconciliation required between systems.</p>
+
+            <h2>Anti-Patterns to Avoid</h2>
+
+            <h3>Direct Database Access from Multiple Systems</h3>
+
+            <p>Allowing multiple modern systems to query legacy databases directly creates a maintenance problem that compounds over time. Each system develops its own understanding of the legacy schema, its own query patterns, and its own assumptions about data meaning.</p>
+
+            <p>When the legacy system changes—and it will—every consuming system must be updated. When performance issues arise, there is no single point of control. When data interpretation questions emerge, there is no authoritative source.</p>
+
+            <p>Prefer a single integration layer that mediates all access to legacy data.</p>
+
+            <h3>Bidirectional Sync Without Conflict Resolution</h3>
+
+            <p>Attempts to maintain identical data in both legacy and modern systems, with changes flowing in both directions, consistently cause problems. Without explicit conflict resolution, concurrent changes create data inconsistencies that are difficult to detect and harder to resolve.</p>
+
+            <p>If bidirectional flow is required, establish clear rules for conflict resolution before implementation—and build infrastructure to detect and handle conflicts when they occur.</p>
+
+            <h3>Optimistic Timeline Estimates</h3>
+
+            <p>Legacy integration projects routinely exceed initial estimates. Legacy systems contain undocumented behaviors, edge cases that only manifest under specific conditions, and dependencies that are not apparent until integration begins.</p>
+
+            <p>Plan for discovery. Budget time for understanding legacy behavior before committing to integration approaches. Expect to revise plans as understanding develops.</p>
+
+            <h2>Planning Considerations</h2>
+
+            <p>Before beginning legacy integration work:</p>
+
+            <p><strong>Understand the legacy system's role.</strong> What business functions depend on it? What data does it contain that is not available elsewhere? What would happen if it failed?</p>
+
+            <p><strong>Document current integration points.</strong> What systems already connect to the legacy system? How? What assumptions do they make?</p>
+
+            <p><strong>Assess available interfaces.</strong> Does the legacy system offer APIs, file exports, database access, or other integration options? What are the constraints of each?</p>
+
+            <p><strong>Identify ownership.</strong> Who maintains the legacy system? Who can authorize changes? Who understands its behavior?</p>
+
+            <p><strong>Define success criteria.</strong> What specific capabilities must the integration provide? What latency is acceptable? What accuracy is required?</p>
+
+            <p>Legacy integration is often the most constrained part of a modernization effort. Time spent understanding constraints before beginning implementation is rarely wasted.</p>
+
+            <hr>
+
+            <p class="small">For questions about legacy system integration strategies, contact <a href="mailto:contact@synexis.io">contact@synexis.io</a>.</p>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container footer-inner">
+      <p>&copy; 2024 Synexis. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="https://linkedin.com/company/synexis" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="mailto:contact@synexis.io">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

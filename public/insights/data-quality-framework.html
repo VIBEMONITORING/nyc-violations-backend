@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Framework for Data Quality in Enterprise Systems — SYNEXIS</title>
+  <meta name="description" content="Practical approaches to measuring, monitoring, and improving data quality across complex organizational systems.">
+  <link rel="canonical" href="https://synexis.io/insights/data-quality-framework.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://synexis.io/insights/data-quality-framework.html">
+  <meta property="og:title" content="A Framework for Data Quality in Enterprise Systems — SYNEXIS">
+  <meta property="og:description" content="Practical approaches to measuring, monitoring, and improving data quality across complex organizational systems.">
+  <meta property="og:site_name" content="Synexis">
+  <meta property="article:published_time" content="2024-01-15">
+  <meta property="article:author" content="Edward Perez">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="A Framework for Data Quality in Enterprise Systems — SYNEXIS">
+  <meta name="twitter:description" content="Practical approaches to measuring, monitoring, and improving data quality across complex organizational systems.">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "A Framework for Data Quality in Enterprise Systems",
+    "description": "Practical approaches to measuring, monitoring, and improving data quality across complex organizational systems.",
+    "datePublished": "2024-01-15",
+    "author": {
+      "@type": "Person",
+      "name": "Edward Perez"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Synexis"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://synexis.io/insights/data-quality-framework.html"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a href="/" class="wordmark" aria-label="Synexis Home">SYNEXIS</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" onclick="this.nextElementSibling.classList.toggle('open'); this.setAttribute('aria-expanded', this.nextElementSibling.classList.contains('open'))">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav" role="navigation" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/capabilities.html">Capabilities</a>
+        <a href="/approach.html">Approach</a>
+        <a href="/work.html">Work</a>
+        <a href="/about.html">About</a>
+        <a href="/insights/" aria-current="page">Insights</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" role="main">
+    <article>
+      <header class="article-header">
+        <div class="container">
+          <p class="article-date">January 2024</p>
+          <h1>A Framework for Data Quality in Enterprise Systems</h1>
+          <p class="lead">Practical approaches to measuring, monitoring, and improving data quality across complex organizational systems.</p>
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="container">
+          <div class="article-content">
+            <p>Data quality problems compound over time. What begins as minor inconsistencies in source systems becomes significant operational drag as data flows through integration layers, reporting systems, and downstream applications. Organizations often discover quality issues only when they manifest as visible failures—incorrect reports, failed processes, or customer-facing errors.</p>
+
+            <p>A systematic approach to data quality requires three components: clear definitions of what quality means in context, infrastructure for continuous measurement, and processes for remediation when issues arise.</p>
+
+            <h2>Defining Quality Dimensions</h2>
+
+            <p>Data quality is not a single metric. It encompasses multiple dimensions, each relevant to different use cases:</p>
+
+            <p><strong>Completeness</strong> measures whether required data is present. A customer record missing a required identifier is incomplete. Completeness requirements vary by context—optional fields may be incomplete without being problematic.</p>
+
+            <p><strong>Accuracy</strong> measures whether data reflects reality. An address that was correct when entered but has since changed is inaccurate. Accuracy often degrades over time as underlying reality changes.</p>
+
+            <p><strong>Consistency</strong> measures whether data agrees across systems. A customer with different addresses in billing and shipping systems has consistency issues. Consistency problems often indicate integration failures.</p>
+
+            <p><strong>Timeliness</strong> measures whether data is current enough for its intended use. Real-time trading systems require sub-second timeliness; monthly reporting systems may tolerate day-old data.</p>
+
+            <p><strong>Validity</strong> measures whether data conforms to expected formats and constraints. A date field containing non-date values has validity issues. Validity can often be enforced at the point of entry.</p>
+
+            <p>Organizations should define explicit requirements for each dimension relevant to their critical data. Vague aspirations for "high quality data" provide no basis for measurement or improvement.</p>
+
+            <h2>Measurement Infrastructure</h2>
+
+            <p>Quality cannot improve without measurement. Effective measurement infrastructure includes:</p>
+
+            <p><strong>Automated validation rules</strong> that run continuously against data stores. Rules should check each quality dimension and produce measurable outputs—not just pass/fail, but specific counts and percentages that can be tracked over time.</p>
+
+            <p><strong>Baseline metrics</strong> established before improvement efforts begin. Without baselines, there is no way to evaluate whether interventions are effective.</p>
+
+            <p><strong>Trend tracking</strong> that reveals whether quality is improving, degrading, or stable. Point-in-time snapshots miss important patterns.</p>
+
+            <p><strong>Alerting thresholds</strong> that notify appropriate personnel when quality degrades beyond acceptable limits. Alerts should be actionable—if no one can respond to an alert, it should not trigger.</p>
+
+            <p>Measurement infrastructure should be proportional to data criticality. Not all data justifies the same investment in quality monitoring.</p>
+
+            <h2>Remediation Processes</h2>
+
+            <p>Measurement without remediation is observation without action. Effective remediation requires:</p>
+
+            <p><strong>Root cause analysis</strong> that identifies why quality issues occur. Correcting symptoms without addressing causes ensures recurrence.</p>
+
+            <p><strong>Prioritization frameworks</strong> that focus effort on issues with greatest operational impact. Not all quality issues merit equal attention.</p>
+
+            <p><strong>Prevention measures</strong> that address root causes rather than repeatedly correcting the same problems. Validation at point of entry prevents more issues than downstream correction.</p>
+
+            <p><strong>Accountability structures</strong> that assign ownership for specific data domains. Quality degrades when no one is responsible for maintaining it.</p>
+
+            <h2>Implementation Approach</h2>
+
+            <p>Organizations often fail at data quality not because they lack tools but because they lack focus. A practical implementation approach:</p>
+
+            <p>Begin with a limited scope. Select 3-5 critical data domains and establish quality measurement for those before expanding coverage.</p>
+
+            <p>Establish baselines before attempting improvement. Measure current state systematically before investing in remediation.</p>
+
+            <p>Automate measurement. Manual quality assessments do not scale and introduce their own accuracy issues.</p>
+
+            <p>Connect quality metrics to business outcomes. Abstract quality scores matter less than operational impacts—failed transactions, incorrect reports, delayed processes.</p>
+
+            <p>Build incrementally. Data quality infrastructure that tries to address everything at once typically addresses nothing effectively.</p>
+
+            <hr>
+
+            <p class="small">For questions about implementing data quality frameworks in your organization, contact <a href="mailto:contact@synexis.io">contact@synexis.io</a>.</p>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container footer-inner">
+      <p>&copy; 2024 Synexis. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="https://linkedin.com/company/synexis" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="mailto:contact@synexis.io">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
