@@ -1,0 +1,319 @@
+BUILD & RUN GUIDE -- Global SaaS RFP Tracker (MVP)
+
+This guide shows how to build, run, and extend the Global SaaS RFP Tracker MVP
+(Postgres + FastAPI + Streamlit + ingestion scripts).
+
+
+------------------------------------------------------------------------
+0. Repo contents (what you're building)
+------------------------------------------------------------------------
+
+  Postgres: stores normalized opportunities
+
+  FastAPI (global_rfp_tracker/api/main.py): search/filter/update API
+
+  Streamlit UI (global_rfp_tracker/ui/app.py): human-in-the-loop review + overrides
+
+  Ingestion pipeline (global_rfp_tracker/ingest/pipeline.py):
+    pulls from portals -> normalizes -> classifies -> dedupes -> saves
+
+  Scripts:
+    global_rfp_tracker/scripts/init_db.py          -- creates tables
+    global_rfp_tracker/scripts/ingest_once.py      -- ingest once (lookback window)
+    global_rfp_tracker/scripts/alert_closing_soon.py -- alerts for deadlines
+
+
+------------------------------------------------------------------------
+1. Prerequisites
+------------------------------------------------------------------------
+
+Recommended (fastest):
+  - Docker Desktop (Windows/Mac) or Docker Engine (Linux)
+  - Git (optional)
+  - An editor (VS Code)
+
+Optional (for local dev without Docker):
+  - Python 3.11+
+  - Local Postgres 14+ (or run Postgres via Docker only)
+
+
+------------------------------------------------------------------------
+2. Quickstart (Docker -- recommended)
+------------------------------------------------------------------------
+
+Step A -- Unzip and create your .env
+
+  1. Unzip the project folder.
+  2. Copy .env.example -> .env
+  3. Edit .env:
+
+  Minimum required:
+    DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/rfp
+
+  Optional but recommended:
+    SAM_API_KEY=...    (enables SAM.gov ingestion)
+
+  Note: other sources in this MVP are public and do not require keys.
+
+
+Step B -- Build and start services
+  From the repo root:
+
+    docker compose up --build
+
+  You should now have:
+    - Postgres on localhost:5432
+    - API on http://localhost:8000
+    - UI on http://localhost:8501
+
+
+Step C -- Initialize the database (first run)
+  In a new terminal:
+
+    docker compose exec api python -m global_rfp_tracker.scripts.init_db
+
+
+Step D -- Run an ingestion pass
+
+    docker compose exec api python -m global_rfp_tracker.scripts.ingest_once --days 3
+
+
+Step E -- Validate results
+
+  API health:    GET http://localhost:8000/health
+  List SaaS only: GET http://localhost:8000/opportunities?saas_label=saas&limit=100
+  UI: open http://localhost:8501 and filter/override labels
+
+
+------------------------------------------------------------------------
+3. Quickstart (Local dev without Docker)
+------------------------------------------------------------------------
+
+Step A -- Create a venv and install dependencies
+
+    python -m venv .venv
+
+  Windows PowerShell:  .venv\Scripts\Activate.ps1
+  macOS/Linux:         source .venv/bin/activate
+
+  Then:
+    pip install -r requirements.txt
+
+
+Step B -- Run Postgres
+  Option 1: Use Docker for DB only:
+
+    docker run --name rfp-db \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_USER=postgres \
+      -e POSTGRES_DB=rfp \
+      -p 5432:5432 -d postgres:16
+
+
+Step C -- Configure environment
+  Create .env (or export env vars) with:
+
+    DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/rfp
+    API_URL=http://localhost:8000
+    SAM_API_KEY=OPTIONAL
+
+
+Step D -- Initialize DB and run services
+
+    python -m global_rfp_tracker.scripts.init_db
+
+  Start API:
+    uvicorn global_rfp_tracker.api.main:app --host 0.0.0.0 --port 8000
+
+  In another terminal, start UI:
+    streamlit run global_rfp_tracker/ui/app.py --server.port 8501
+
+
+Step E -- Ingest
+
+    python -m global_rfp_tracker.scripts.ingest_once --days 3
+
+
+------------------------------------------------------------------------
+4. Configuration: enable/disable sources
+------------------------------------------------------------------------
+
+Edit config/source_map.yml:
+  - Set enabled: true/false per source.
+  - Run ingestion again.
+
+To run only specific sources (overrides config):
+
+    python -m global_rfp_tracker.scripts.ingest_once --days 3 --sources sam_gov,ted_eu
+
+
+------------------------------------------------------------------------
+5. Classification (how "SaaS" is determined)
+------------------------------------------------------------------------
+
+Rule-based scoring lives in:
+  global_rfp_tracker/classify/rules.py
+
+Outputs saved per record:
+  saas_score     (0-100)
+  saas_label     (saas, maybe, not)
+  saas_rationale (keyword/category hits)
+
+Optional LLM verifier hook:
+  global_rfp_tracker/classify/llm_verifier.py
+
+  Disabled by default; enable only with governance (audit, rate limits)
+  and by setting OPENAI_API_KEY.
+
+
+------------------------------------------------------------------------
+6. Alerts (deadlines closing soon)
+------------------------------------------------------------------------
+
+Configure email and/or Slack in .env:
+
+  Email:
+    ALERT_EMAIL_FROM, ALERT_EMAIL_TO, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
+
+  Slack:
+    SLACK_WEBHOOK_URL
+
+Run once:
+    python -m global_rfp_tracker.scripts.alert_closing_soon
+
+
+------------------------------------------------------------------------
+7. Scheduling (automation)
+------------------------------------------------------------------------
+
+Linux cron (example)
+  Ingest daily at 06:15 and alert at 06:30:
+
+    15 6 * * * cd /opt/global_rfp_tracker && docker compose exec -T api python -m global_rfp_tracker.scripts.ingest_once --days 3
+    30 6 * * * cd /opt/global_rfp_tracker && docker compose exec -T api python -m global_rfp_tracker.scripts.alert_closing_soon
+
+Windows Task Scheduler (example)
+  Create two tasks that run:
+
+    Program/script: docker
+    Arguments:      compose exec -T api python -m global_rfp_tracker.scripts.ingest_once --days 3
+    Start in:       path to the repo folder
+
+  Repeat for the alert script.
+
+
+------------------------------------------------------------------------
+8. Adding a new portal connector (developer workflow)
+------------------------------------------------------------------------
+
+Step A -- Implement a connector
+
+  1. Create global_rfp_tracker/ingest/connectors/<source>.py
+  2. Implement the abstract interface:
+
+    import datetime as dt
+    from global_rfp_tracker.ingest.base import Connector
+    from global_rfp_tracker.ingest.types import OpportunityIn
+
+    class MySourceConnector(Connector):
+        source = "my_source"
+
+        async def fetch(
+            self, since: dt.datetime, until: dt.datetime
+        ) -> list[OpportunityIn]:
+            return [
+                OpportunityIn(
+                    source=self.source,
+                    source_id="portal-unique-id",
+                    source_url="https://...",
+                    country="US",
+                    buyer="Agency Name",
+                    title="Cloud SaaS ...",
+                    description="...",
+                    category="IT / Software",
+                    taxonomy={"cpv": ["..."], "unspsc": ["..."]},
+                    publish_date=since,
+                    close_date=until,
+                    doc_urls=["https://.../spec.pdf"],
+                    access_level="public_headline"
+                )
+            ]
+
+
+Step B -- Register it
+  Add it to global_rfp_tracker/ingest/registry.py:
+    - Import the connector
+    - Add it to CONNECTORS
+
+
+Step C -- Add it to config/source_map.yml
+  Add an entry with: id, name, type, enabled, country, access, notes
+
+
+Step D -- Ingest and validate
+  Run ingestion for your source only:
+
+    python -m global_rfp_tracker.scripts.ingest_once --days 3 --sources my_source
+
+Connector best practices:
+  - Use official APIs where available; respect portal terms.
+  - Handle pagination and rate limits (backoff/retry).
+  - Store raw source IDs (source_id) and stable URLs (source_url) to aid dedupe.
+  - If docs are behind login, set access_level accordingly and capture
+    headline metadata only.
+
+
+------------------------------------------------------------------------
+9. API usage (common queries)
+------------------------------------------------------------------------
+
+List recent opportunities:
+  GET /opportunities?limit=100
+
+Search:
+  GET /opportunities?q=facility%20management&limit=100
+
+Filter SaaS only:
+  GET /opportunities?saas_label=saas&limit=200
+
+Closing soon:
+  GET /opportunities?deadline_before=2026-03-31&saas_label=saas
+
+Override classification (manual):
+  PATCH /opportunities/{id}
+  {
+    "saas_label": "saas",
+    "tags": ["legaltech", "ai"],
+    "notes": "Manual override after review"
+  }
+
+
+------------------------------------------------------------------------
+10. Production hardening checklist (beyond MVP)
+------------------------------------------------------------------------
+
+  [ ] Add Alembic migrations (schema evolution)
+  [ ] Store raw payloads per connector (audit/debug)
+  [ ] Centralized logging + metrics (ingestion success rate, source latency)
+  [ ] Alerting on ingestion failures (dead connectors)
+  [ ] Strict rate limiting + request identity (portal compliance)
+  [ ] Authentication for API/UI (if exposed publicly)
+
+
+------------------------------------------------------------------------
+Troubleshooting
+------------------------------------------------------------------------
+
+"DB connection refused"
+  - Docker: ensure db container is healthy (docker compose ps)
+  - Local: confirm Postgres is listening on localhost:5432
+  - Confirm DATABASE_URL host matches your run mode
+    (db in Docker, localhost locally)
+
+"SAM.gov returns 401/403"
+  - Confirm SAM_API_KEY is set correctly in .env
+  - Re-run ingestion
+
+"UI can't reach API"
+  - Docker: UI default API_URL=http://api:8000 is correct
+  - Local: set API_URL=http://localhost:8000
