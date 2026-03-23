@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+    background: #f0f0f0;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply max-w-[430px] mx-auto min-h-screen relative overflow-hidden bg-white;
+  }
+
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top, 0px), 12px);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+  }
+
+  .btn-game {
+    @apply w-full bg-[#FFB800] text-white font-semibold py-4 px-6 rounded-2xl text-center
+           active:scale-95 transition-all duration-150 shadow-md text-base;
+  }
+
+  .btn-game-outline {
+    @apply w-full border-2 border-[#FFB800] text-[#FFB800] font-semibold py-4 px-6 rounded-2xl
+           text-center active:scale-95 transition-all duration-150 bg-white text-base;
+  }
+
+  .btn-gift {
+    @apply w-full bg-[#E8B4B8] text-white font-medium py-4 px-6 rounded-2xl text-center
+           active:scale-95 transition-all duration-150 text-base;
+  }
+
+  .card-game {
+    @apply bg-white rounded-3xl shadow-sm border border-amber-100 p-4;
+  }
+
+  .card-gift {
+    @apply bg-white rounded-3xl shadow-sm border border-rose-100 p-4;
+  }
+
+  .points-pill {
+    @apply inline-flex items-center gap-1 bg-amber-50 text-amber-700
+           text-xs font-bold px-2 py-1 rounded-full border border-amber-200;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .font-display {
+    font-family: 'Fraunces', serif;
+  }
+}
